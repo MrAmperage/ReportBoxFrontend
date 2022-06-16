@@ -1,0 +1,36 @@
+{
+  "name": "reportboxfrontend",
+  "version": "1.0.0",
+  "description": "Frontend for ReportBox",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrAmperage/ReportBoxFrontend.git"
+  },
+  "author": "Mr.Amperage",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrAmperage/ReportBoxFrontend/issues"
+  },
+  "homepage": "https://github.com/MrAmperage/ReportBoxFrontend#readme",
+  "devDependencies": {
+    "@babel/core": "^7.18.5",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-react": "^7.17.12",
+    "babel-loader": "^8.2.5",
+    "css-loader": "^6.7.1",
+    "file-loader": "^6.2.0",
+    "style-loader": "^3.3.1",
+    "styled-components": "^5.3.5"
+  },
+  "dependencies": {
+    "antd": "^4.21.2",
+    "mobx": "^6.6.0",
+    "mobx-react": "^7.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
