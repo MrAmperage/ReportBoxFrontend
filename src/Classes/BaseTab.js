@@ -7,15 +7,12 @@ export class BaseTab {
     this.CurrentMenuElementKey = TabObject.Items[0].Id;
   }
   GenerateMenu(TabObject) {
-    let Menu = [];
-    TabObject.Items.forEach((Element) => {
-      Menu.push({
+    return TabObject.Items.map((Element) => {
+      return {
         label: Element.Caption,
         key: Element.Id,
-      });
-      Menu.push({ type: 'divider' });
+      };
     });
-    return Menu;
   }
   GenerateTabKey(TabID, OpenTabs) {
     let TabCount = 0;
