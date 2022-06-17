@@ -3,7 +3,15 @@ export class BaseTab {
     this.Id = TabObject.Id;
     this.Caption = TabObject.Caption;
     this.Key = this.GenerateTabKey(TabObject.Id, OpenTabs);
-    this.Items = TabObject.Items;
+    this.Menu = this.GenerateMenu(TabObject);
+  }
+  GenerateMenu(TabObject) {
+    let Menu = [];
+    TabObject.Items.forEach((Element, Index) => {
+      Menu.push({ label: Element.Caption, key: Element.Key });
+      Menu.push({ type: 'divider' });
+    });
+    return Menu;
   }
   GenerateTabKey(TabID, OpenTabs) {
     let TabCount = 0;

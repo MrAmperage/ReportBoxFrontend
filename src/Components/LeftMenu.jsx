@@ -5,11 +5,7 @@ import React from 'react';
 const LeftMenu = inject('GlobalStore')(
   observer((props) => {
     return props.GlobalStore.CurrentTabKey != null ? (
-      <Menu
-        items={props.GlobalStore.GetCurrentTab().Items.map((Element) => {
-          return { label: Element.Caption, key: Element.Key };
-        })}
-      />
+      <Menu items={props.GlobalStore.GetCurrentTab().Menu} />
     ) : null;
   })
 );

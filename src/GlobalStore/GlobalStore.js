@@ -36,6 +36,42 @@ class GlobalStore {
       this.CurrentTabKey = this.OpenTabs[0].Key;
     }
   }
+  ChangeCurrentTab(NewTabKey) {
+    this.CurrentTabKey = NewTabKey;
+  }
+  RemoveTab(TabKey) {
+    if (this.OpenTabs.length == 1) {
+      this.CurrentTabKey = null;
+    }
+    if (this.CurrentTabKey == TabKey && this.OpenTabs.length > 1) {
+      if (
+        this.OpenTabs.findIndex((Tab) => {
+          return Tab.Key == TabKey;
+        }) <
+        this.OpenTabs.length - 1
+      ) {
+        this.CurrentTabKey =
+          this.OpenTabs[
+            this.OpenTabs.findIndex((Tab) => {
+              return Tab.Key == TabKey;
+            }) + 1
+          ].Key;
+      } else {
+        this.CurrentTabKey =
+          this.OpenTabs[
+            this.OpenTabs.findIndex((Tab) => {
+              return Tab.Key == TabKey;
+            }) - 1
+          ].Key;
+      }
+    }
+    this.OpenTabs.splice(
+      this.OpenTabs.findIndex((Tab) => {
+        return Tab.Key == TabKey;
+      }),
+      1
+    );
+  }
 }
 
 const Store = new GlobalStore();

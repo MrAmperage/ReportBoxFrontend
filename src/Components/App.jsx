@@ -49,9 +49,15 @@ const App = observer(() => {
                 );
               })}
               <Tabs
+                onChange={(TabKey) => {
+                  GlobalStore.ChangeCurrentTab(TabKey);
+                }}
                 destroyInactiveTabPane={true}
                 size="small"
                 hideAdd={true}
+                onEdit={(TabKey) => {
+                  GlobalStore.RemoveTab(TabKey);
+                }}
                 type="editable-card"
               >
                 {GlobalStore.OpenTabs.map((Tab) => {
