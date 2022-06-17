@@ -10,6 +10,7 @@ const { TabPane } = Tabs;
 import '../CSS/App.css';
 import 'antd/dist/antd.css';
 import { ApiFetch } from '../Helpers/Helpers';
+import LeftMenu from './LeftMenu';
 
 const App = observer(() => {
   const RequestApplicationMenu = () => {
@@ -31,7 +32,9 @@ const App = observer(() => {
         <Layout className="FullExtend">
           <Header></Header>
           <Layout>
-            <Sider theme="light"></Sider>
+            <Sider theme="light">
+              <LeftMenu></LeftMenu>
+            </Sider>
             <Content>
               {GlobalStore.ApplicationMenu.map((MenuElement) => {
                 return (

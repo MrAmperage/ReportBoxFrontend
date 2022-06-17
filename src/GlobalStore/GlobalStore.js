@@ -1,7 +1,6 @@
 import ReportTab from '../Classes/ReportTab';
 import SettingTab from '../Classes/SettingsTab';
-
-const { makeAutoObservable } = require('mobx');
+import { makeAutoObservable } from 'mobx';
 
 class GlobalStore {
   OpenTabs = [];
@@ -14,6 +13,16 @@ class GlobalStore {
   SetNewApplicationMenu(NewApplicationMenu) {
     this.ApplicationMenu = NewApplicationMenu;
   }
+
+  GetCurrentTab() {
+    if (this.OpenTabs.length > 0) {
+      return this.OpenTabs.find((Tab) => {
+        return Tab.Key == this.CurrentTabKey;
+      });
+    } else {
+      return null;
+    }
+  }
   AddTab(TabObject) {
     switch (TabObject.Type) {
       case 'setting':
@@ -22,6 +31,9 @@ class GlobalStore {
       case 'report':
         this.OpenTabs.push(new ReportTab(TabObject, this.OpenTabs));
         break;
+    }
+    if (this.OpenTabs.length == 1) {
+      this.CurrentTabKey = this.OpenTabs[0].Key;
     }
   }
 }
