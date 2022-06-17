@@ -36,6 +36,9 @@ class GlobalStore {
       this.CurrentTabKey = this.OpenTabs[0].Key;
     }
   }
+  ChangeCurrentMenuElementKey(NewCurrentMenuElementKey) {
+    this.GetCurrentTab().CurrentMenuElementKey = NewCurrentMenuElementKey;
+  }
   ChangeCurrentTab(NewTabKey) {
     this.CurrentTabKey = NewTabKey;
   }

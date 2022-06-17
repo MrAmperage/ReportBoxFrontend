@@ -7,10 +7,10 @@ import ru_RU from 'antd/lib/locale/ru_RU';
 import { observer, Provider } from 'mobx-react';
 const { Header, Sider, Content } = Layout;
 const { TabPane } = Tabs;
-import '../CSS/App.css';
 import 'antd/dist/antd.css';
 import { ApiFetch } from '../Helpers/Helpers';
 import LeftMenu from './LeftMenu';
+import { GlobalStyle } from '../Styles/GlobalStyle';
 
 const App = observer(() => {
   const RequestApplicationMenu = () => {
@@ -29,6 +29,7 @@ const App = observer(() => {
   return (
     <Provider GlobalStore={GlobalStore}>
       <ConfigProvider locale={ru_RU}>
+        <GlobalStyle />
         <Layout className="FullExtend">
           <Header></Header>
           <Layout>

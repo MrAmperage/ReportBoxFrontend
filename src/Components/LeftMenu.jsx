@@ -5,7 +5,15 @@ import React from 'react';
 const LeftMenu = inject('GlobalStore')(
   observer((props) => {
     return props.GlobalStore.CurrentTabKey != null ? (
-      <Menu items={props.GlobalStore.GetCurrentTab().Menu} />
+      <Menu
+        onSelect={(MenuElement) => {
+          props.GlobalStore.ChangeCurrentMenuElementKey(MenuElement.key);
+        }}
+        items={props.GlobalStore.GetCurrentTab().Menu}
+        defaultSelectedKeys={[
+          props.GlobalStore.GetCurrentTab().CurrentMenuElementKey,
+        ]}
+      />
     ) : null;
   })
 );
