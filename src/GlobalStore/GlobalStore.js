@@ -1,3 +1,6 @@
+import ReportTab from '../Classes/ReportTab';
+import SettingTab from '../Classes/SettingsTab';
+
 const { makeAutoObservable } = require('mobx');
 
 class GlobalStore {
@@ -10,6 +13,16 @@ class GlobalStore {
   }
   SetNewApplicationMenu(NewApplicationMenu) {
     this.ApplicationMenu = NewApplicationMenu;
+  }
+  AddTab(TabObject) {
+    switch (TabObject.Type) {
+      case 'setting':
+        this.OpenTabs.push(new SettingTab(TabObject, this.OpenTabs));
+        break;
+      case 'report':
+        this.OpenTabs.push(new ReportTab(TabObject, this.OpenTabs));
+        break;
+    }
   }
 }
 

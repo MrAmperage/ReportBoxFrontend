@@ -28,21 +28,34 @@ const App = observer(() => {
   return (
     <Provider GlobalStore={GlobalStore}>
       <ConfigProvider locale={ru_RU}>
-        <Layout>
+        <Layout className="FullExtend">
           <Header></Header>
           <Layout>
             <Sider theme="light"></Sider>
-            {GlobalStore.ApplicationMenu.map((MenuElement) => {
-              return (
-                <Button key={MenuElement.Id}>{MenuElement.Caption} </Button>
-              );
-            })}
-            <Tabs
-              destroyInactiveTabPane={true}
-              size="small"
-              hideAdd={true}
-              type="editable-card"
-            ></Tabs>
+            <Content>
+              {GlobalStore.ApplicationMenu.map((MenuElement) => {
+                return (
+                  <Button
+                    key={MenuElement.Id}
+                    onClick={() => {
+                      GlobalStore.AddTab(MenuElement);
+                    }}
+                  >
+                    {MenuElement.Caption}
+                  </Button>
+                );
+              })}
+              <Tabs
+                destroyInactiveTabPane={true}
+                size="small"
+                hideAdd={true}
+                type="editable-card"
+              >
+                {GlobalStore.OpenTabs.map((Tab) => {
+                  return <TabPane tab={Tab.Caption} key={Tab.Key}></TabPane>;
+                })}
+              </Tabs>
+            </Content>
           </Layout>
         </Layout>
       </ConfigProvider>
