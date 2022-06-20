@@ -9,7 +9,6 @@ const { Header, Sider, Content } = Layout;
 const { TabPane } = Tabs;
 import 'antd/dist/antd.css';
 import { ApiFetch } from '../Helpers/Helpers';
-import LeftMenu from './LeftMenu';
 import { GlobalStyle } from '../Styles/GlobalStyle';
 
 const App = observer(() => {
@@ -23,6 +22,28 @@ const App = observer(() => {
       }
     );
   };
+  const GetComponent = () => {
+    let ReactComponent = null;
+    if (GlobalStore.CurrentTabKey != null) {
+      ReactComponent = GlobalStore.GetCurrentMenuElement().component;
+    }
+    return <ReactComponent />;
+  };
+  const GetLeftSidebar = () => {
+    if (GlobalStore.CurrentTabKey != null) {
+      return (
+        <React.Suspense>
+          {GlobalStore.GetCurrentTab().LeftSidebar.map(
+            (LazyComponent, Index) => {
+              return <LazyComponent key={Index} />;
+            }
+          )}
+        </React.Suspense>
+      );
+    } else {
+      return null;
+    }
+  };
   useEffect(() => {
     RequestApplicationMenu();
   }, []);
@@ -33,9 +54,7 @@ const App = observer(() => {
         <Layout className="FullExtend">
           <Header></Header>
           <Layout>
-            <Sider theme="light">
-              <LeftMenu></LeftMenu>
-            </Sider>
+            <Sider theme="light">{GetLeftSidebar()}</Sider>
             <Content>
               {GlobalStore.ApplicationMenu.map((MenuElement) => {
                 return (
@@ -62,7 +81,11 @@ const App = observer(() => {
                 type="editable-card"
               >
                 {GlobalStore.OpenTabs.map((Tab) => {
-                  return <TabPane tab={Tab.Caption} key={Tab.Key}></TabPane>;
+                  return (
+                    <TabPane tab={Tab.Caption} key={Tab.Key}>
+                      <React.Suspense>{GetComponent()}</React.Suspense>
+                    </TabPane>
+                  );
                 })}
               </Tabs>
             </Content>

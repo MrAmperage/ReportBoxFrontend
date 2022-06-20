@@ -1,3 +1,4 @@
+import React from 'react';
 export class BaseTab {
   constructor(TabObject, OpenTabs) {
     this.Id = TabObject.Id;
@@ -5,6 +6,7 @@ export class BaseTab {
     this.Key = this.GenerateTabKey(TabObject.Id, OpenTabs);
     this.Menu = this.GenerateMenu(TabObject);
     this.CurrentMenuElementKey = TabObject.Items[0].Id;
+    this.LeftSidebar = [];
   }
   GenerateMenu(TabObject) {
     return TabObject.Items.map((Element) => {

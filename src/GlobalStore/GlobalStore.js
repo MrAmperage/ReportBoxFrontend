@@ -39,6 +39,11 @@ class GlobalStore {
   ChangeCurrentMenuElementKey(NewCurrentMenuElementKey) {
     this.GetCurrentTab().CurrentMenuElementKey = NewCurrentMenuElementKey;
   }
+  GetCurrentMenuElement() {
+    return this.GetCurrentTab().Menu.find((MenuItem) => {
+      return MenuItem.Id == this.GetCurrentTab().ChangeCurrentMenuElementKey;
+    });
+  }
   ChangeCurrentTab(NewTabKey) {
     this.CurrentTabKey = NewTabKey;
   }
