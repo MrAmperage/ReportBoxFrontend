@@ -1,3 +1,4 @@
+import { action, computed, makeObservable, observable } from 'mobx';
 import React from 'react';
 export class BaseTab {
   constructor(TabObject, OpenTabs) {
@@ -7,6 +8,27 @@ export class BaseTab {
     this.Menu = this.GenerateMenu(TabObject);
     this.CurrentMenuElementKey = TabObject.Items[0].Id;
     this.LeftSidebar = [];
+    makeObservable(this, {
+      CurrentMenuElementKey: observable,
+      GetComponent: computed,
+      GetCurrentMenuElement: computed,
+      SetCurrentMenuElementKey: action,
+    });
+  }
+  SetCurrentMenuElementKey(NewCurrentMenuElementKey) {
+    this.CurrentMenuElementKey = NewCurrentMenuElementKey;
+  }
+  get GetCurrentMenuElement() {
+    return this.Menu.find((MenuItem) => {
+      return MenuItem.Id == this.ChangeCurrentMenuElementKey;
+    });
+  }
+  get GetComponent() {
+    let ReactComponent = null;
+    ReactComponent = this.Menu.find((MenuItem) => {
+      return MenuItem.key == this.CurrentMenuElementKey;
+    }).component;
+    return <ReactComponent />;
   }
   GenerateMenu(TabObject) {
     return TabObject.Items.map((Element) => {

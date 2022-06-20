@@ -10,9 +10,14 @@ export default class SettingTab extends BaseTab {
   SetComponents() {
     return this.Menu.map((MenuElement) => {
       switch (MenuElement.key) {
-        case 'statistic':
+        case 'Statistic':
           MenuElement.component = React.lazy(() =>
             import('../Components/Statistic')
+          );
+          break;
+        case 'UnitTypes':
+          MenuElement.component = React.lazy(() =>
+            import('../Components/GeneralCRUD')
           );
           break;
       }

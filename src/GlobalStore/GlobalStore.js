@@ -1,6 +1,6 @@
 import ReportTab from '../Classes/ReportTab';
 import SettingTab from '../Classes/SettingsTab';
-import { makeAutoObservable } from 'mobx';
+import { action, computed, makeAutoObservable, makeObservable } from 'mobx';
 
 class GlobalStore {
   OpenTabs = [];
@@ -14,7 +14,7 @@ class GlobalStore {
     this.ApplicationMenu = NewApplicationMenu;
   }
 
-  GetCurrentTab() {
+  get GetCurrentTab() {
     if (this.OpenTabs.length > 0) {
       return this.OpenTabs.find((Tab) => {
         return Tab.Key == this.CurrentTabKey;
@@ -36,15 +36,8 @@ class GlobalStore {
       this.CurrentTabKey = this.OpenTabs[0].Key;
     }
   }
-  ChangeCurrentMenuElementKey(NewCurrentMenuElementKey) {
-    this.GetCurrentTab().CurrentMenuElementKey = NewCurrentMenuElementKey;
-  }
-  GetCurrentMenuElement() {
-    return this.GetCurrentTab().Menu.find((MenuItem) => {
-      return MenuItem.Id == this.GetCurrentTab().ChangeCurrentMenuElementKey;
-    });
-  }
-  ChangeCurrentTab(NewTabKey) {
+
+  SetCurrentTab(NewTabKey) {
     this.CurrentTabKey = NewTabKey;
   }
   RemoveTab(TabKey) {

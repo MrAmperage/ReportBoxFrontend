@@ -22,22 +22,13 @@ const App = observer(() => {
       }
     );
   };
-  const GetComponent = () => {
-    let ReactComponent = null;
-    if (GlobalStore.CurrentTabKey != null) {
-      ReactComponent = GlobalStore.GetCurrentMenuElement().component;
-    }
-    return <ReactComponent />;
-  };
   const GetLeftSidebar = () => {
     if (GlobalStore.CurrentTabKey != null) {
       return (
         <React.Suspense>
-          {GlobalStore.GetCurrentTab().LeftSidebar.map(
-            (LazyComponent, Index) => {
-              return <LazyComponent key={Index} />;
-            }
-          )}
+          {GlobalStore.GetCurrentTab.LeftSidebar.map((LazyComponent, Index) => {
+            return <LazyComponent key={Index} />;
+          })}
         </React.Suspense>
       );
     } else {
@@ -70,7 +61,7 @@ const App = observer(() => {
               })}
               <Tabs
                 onChange={(TabKey) => {
-                  GlobalStore.ChangeCurrentTab(TabKey);
+                  GlobalStore.SetCurrentTab(TabKey);
                 }}
                 destroyInactiveTabPane={true}
                 size="small"
@@ -83,7 +74,9 @@ const App = observer(() => {
                 {GlobalStore.OpenTabs.map((Tab) => {
                   return (
                     <TabPane tab={Tab.Caption} key={Tab.Key}>
-                      <React.Suspense>{GetComponent()}</React.Suspense>
+                      <React.Suspense>
+                        {GlobalStore.GetCurrentTab.GetComponent}
+                      </React.Suspense>
                     </TabPane>
                   );
                 })}
