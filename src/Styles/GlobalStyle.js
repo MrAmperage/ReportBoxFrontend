@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle, st } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`html,body,#App,.FullExtend{
   height: 100%;
