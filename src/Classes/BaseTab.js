@@ -1,5 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import React from 'react';
+
 export class BaseTab {
   constructor(TabObject, OpenTabs) {
     this.Id = TabObject.Id;
@@ -12,11 +13,15 @@ export class BaseTab {
       CurrentMenuElementKey: observable,
       GetComponent: computed,
       GetCurrentMenuElement: computed,
+      GetCurrentScheme: computed,
       SetCurrentMenuElementKey: action,
     });
   }
   SetCurrentMenuElementKey(NewCurrentMenuElementKey) {
     this.CurrentMenuElementKey = NewCurrentMenuElementKey;
+  }
+  get GetCurrentScheme() {
+    return this.GetCurrentMenuElement.scheme;
   }
   get GetCurrentMenuElement() {
     return this.Menu.find((MenuItem) => {
@@ -35,6 +40,7 @@ export class BaseTab {
       return {
         label: Element.Caption,
         key: Element.Id,
+        scheme: Element.Scheme.Scheme,
       };
     });
   }
