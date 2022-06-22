@@ -24,11 +24,11 @@ class GlobalStore {
     }
   }
   AddTab(TabObject) {
-    switch (TabObject.Type) {
-      case 'setting':
+    switch (TabObject.Id) {
+      case 'Settings':
         this.OpenTabs.push(new SettingTab(TabObject, this.OpenTabs));
         break;
-      case 'report':
+      case 'Reports':
         this.OpenTabs.push(new ReportTab(TabObject, this.OpenTabs));
         break;
     }

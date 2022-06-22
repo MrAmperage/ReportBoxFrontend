@@ -6,7 +6,7 @@ export class BaseTab {
     this.Caption = TabObject.Caption;
     this.Key = this.GenerateTabKey(TabObject.Id, OpenTabs);
     this.Menu = this.GenerateMenu(TabObject);
-    this.CurrentMenuElementKey = TabObject.Items[0].Id;
+    this.CurrentMenuElementKey = TabObject.LeftMenu[0].Id;
     this.LeftSidebar = [];
     makeObservable(this, {
       CurrentMenuElementKey: observable,
@@ -31,7 +31,7 @@ export class BaseTab {
     return <ReactComponent />;
   }
   GenerateMenu(TabObject) {
-    return TabObject.Items.map((Element) => {
+    return TabObject.LeftMenu.map((Element) => {
       return {
         label: Element.Caption,
         key: Element.Id,

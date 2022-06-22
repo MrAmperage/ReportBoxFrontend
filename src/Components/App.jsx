@@ -18,7 +18,7 @@ const App = observer(() => {
       'GET',
       undefined,
       (Response) => {
-        GlobalStore.SetNewApplicationMenu(Response.Data.Items);
+        GlobalStore.SetNewApplicationMenu(Response.Data);
       }
     );
   };
