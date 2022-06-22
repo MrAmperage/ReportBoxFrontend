@@ -23,6 +23,11 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
       NewObjectTable[ObjectIndex].Edited = true;
       SetNewObjectTable(NewObjectTable);
     };
+    const AddObject = (ObjectPrototype) => {
+      let NewObjectTable = [...ObjectTable];
+      NewObjectTable.unshift(ObjectPrototype);
+      SetNewObjectTable(NewObjectTable);
+    };
     const GenerateLayout = (Scheme) => {
       if ('Reference' in Scheme) {
         return GenerateLayout(Scheme.Reference);
@@ -65,7 +70,17 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
             });
             return (
               <div key={SchemeObject.Id}>
-                {'TableButtonBar' in SchemeObject ? <TableButtonBar /> : null}
+                {'TableButtonBar' in SchemeObject ? (
+                  <TableButtonBar
+                    OnAdd={() => {
+                      let NewObject = {
+                        ...SchemeObject.TableButtonBar.ObjectPrototype,
+                      };
+                      NewObject.Key = nanoid();
+                      AddObject(NewObject);
+                    }}
+                  />
+                ) : null}
                 <Table
                   scroll={{ y: 700 }}
                   rowSelection={{
