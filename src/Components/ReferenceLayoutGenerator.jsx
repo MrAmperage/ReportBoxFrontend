@@ -23,6 +23,19 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
       NewObjectTable[ObjectIndex].Edited = true;
       SetNewObjectTable(NewObjectTable);
     };
+    const CancelEditObject = (Key) => {
+      let NewObjectTable = [...ObjectTable];
+      let ObjectIndex = NewObjectTable.findIndex((Object) => {
+        return Object.Key == Key;
+      });
+      if (!('Id' in NewObjectTable[ObjectIndex])) {
+        NewObjectTable.splice(ObjectIndex, 1);
+      } else {
+        NewObjectTable[ObjectIndex].Edited = false;
+      }
+
+      SetNewObjectTable(NewObjectTable);
+    };
     const AddObject = (ObjectPrototype) => {
       let NewObjectTable = [...ObjectTable];
       NewObjectTable.unshift(ObjectPrototype);
@@ -50,7 +63,14 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                       <Button size="small" type="primary">
                         Сохранить
                       </Button>
-                      <Button size="small">Отмена</Button>
+                      <Button
+                        size="small"
+                        onClick={() => {
+                          CancelEditObject(Record.Key);
+                        }}
+                      >
+                        Отмена
+                      </Button>
                     </RowButtonsWrapperStyle>
                   </RowStyle>
                 ) : (
