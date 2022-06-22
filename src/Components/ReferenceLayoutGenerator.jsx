@@ -1,9 +1,14 @@
-import { Table, Input } from 'antd';
+import { Table, Input, Button } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
-import { RowTablePointerStyle } from '../Styles/TableStyles';
+import {
+  RowButtonsWrapperStyle,
+  RowInputStyle,
+  RowStyle,
+  RowTablePointerStyle,
+} from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
 
 const ReferenceLayoutGenerator = inject('GlobalStore')(
@@ -32,7 +37,17 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
             SchemeObject.Columns.map((Column) => {
               Column.render = (Value, Record, Index) => {
                 return Record.Edited ? (
-                  <Input />
+                  <RowStyle>
+                    <RowInputStyle>
+                      <Input size="small" defaultValue={Value} />
+                    </RowInputStyle>
+                    <RowButtonsWrapperStyle>
+                      <Button size="small" type="primary">
+                        Сохранить
+                      </Button>
+                      <Button size="small">Отмена</Button>
+                    </RowButtonsWrapperStyle>
+                  </RowStyle>
                 ) : (
                   <RowTablePointerStyle>{Value}</RowTablePointerStyle>
                 );
@@ -50,7 +65,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
             });
             return (
               <div key={SchemeObject.Id}>
-                {SchemeObject.TableButtonBar ? <TableButtonBar /> : null}
+                {'TableButtonBar' in SchemeObject ? <TableButtonBar /> : null}
                 <Table
                   scroll={{ y: 700 }}
                   rowSelection={{
