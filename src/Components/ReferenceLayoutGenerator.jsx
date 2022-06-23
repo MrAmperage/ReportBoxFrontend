@@ -1,4 +1,4 @@
-import { Table, Input, Button } from 'antd';
+import { Table, Input, Button, Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
@@ -16,28 +16,68 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
     const [ObjectTable, SetNewObjectTable] = useState([]);
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [Scheme, SetNewScheme] = useState([]);
-    const EditObject = (Key) => {
+    const EditObject = (Index) => {
       let NewObjectTable = [...ObjectTable];
-      let ObjectIndex = NewObjectTable.findIndex((Object) => {
-        return Object.Key == Key;
-      });
-      NewObjectTable[ObjectIndex].Edited = true;
+      NewObjectTable[Index].Edited = true;
       SetNewObjectTable(NewObjectTable);
     };
-    const CancelEditObject = (Key) => {
+    const DeleteObject = (Key) => {
       let NewObjectTable = [...ObjectTable];
       let ObjectIndex = NewObjectTable.findIndex((Object) => {
         return Object.Key == Key;
       });
-      if (!('Id' in NewObjectTable[ObjectIndex])) {
-        NewObjectTable.splice(ObjectIndex, 1);
+      if ('Id' in NewObjectTable[ObjectIndex]) {
+        ApiFetch(
+          `api/${props.GlobalStore.GetCurrentTab.CurrentMenuElementKey}/${NewObjectTable[ObjectIndex].Id}`,
+          'DELETE',
+          undefined,
+          (Response) => {
+            RequestData();
+            SetNewSelectedKey(null);
+          }
+        );
       } else {
-        NewObjectTable[ObjectIndex].Edited = false;
+        NewObjectTable.splice(ObjectIndex, 1);
+        SetNewObjectTable(NewObjectTable);
+        SetNewSelectedKey(null);
+      }
+    };
+    const SaveObject = () => {};
+    const ShowDeleteModal = (Key) => {
+      if (Key != null && ObjectTable.length > 0) {
+        Modal.confirm({
+          title: 'Подтвердите действие',
+          content: 'Вы действительно хотите удалить объект?',
+          okText: 'Удалить',
+          okButtonProps: { size: 'small', type: 'primary', danger: true },
+          cancelText: 'Отмена',
+          cancelButtonProps: {
+            size: 'small',
+          },
+          onOk: () => {
+            DeleteObject(Key);
+          },
+        });
+      }
+    };
+    const CancelEditObject = (Index) => {
+      let NewObjectTable = [...ObjectTable];
+      if (!('Id' in NewObjectTable[Index])) {
+        NewObjectTable.splice(Index, 1);
+        if (NewObjectTable.length == 0) {
+          SetNewSelectedKey(null);
+        }
+      } else {
+        NewObjectTable[Index].Edited = false;
       }
 
       SetNewObjectTable(NewObjectTable);
     };
-    const AddObject = (ObjectPrototype) => {
+    const AddObject = (SchemeObject) => {
+      let ObjectPrototype = {
+        ...SchemeObject.TableButtonBar.ObjectPrototype,
+      };
+      ObjectPrototype.Key = nanoid();
       let NewObjectTable = [...ObjectTable];
       NewObjectTable.unshift(ObjectPrototype);
       SetNewObjectTable(NewObjectTable);
@@ -60,7 +100,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                       <Button
                         size="small"
                         onClick={() => {
-                          CancelEditObject(Record.Key);
+                          CancelEditObject(Index);
                         }}
                       >
                         Отмена
@@ -71,11 +111,11 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                   <RowTablePointerStyle>{Value}</RowTablePointerStyle>
                 );
               };
-              Column.onCell = (Record) => {
+              Column.onCell = (Record, Index) => {
                 return {
                   onDoubleClick: (event) => {
                     if (Column.edited) {
-                      EditObject(Record.Key);
+                      EditObject(Index);
                     }
                   },
                 };
@@ -93,11 +133,10 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                 {'TableButtonBar' in SchemeObject ? (
                   <TableButtonBar
                     OnAdd={() => {
-                      let NewObject = {
-                        ...SchemeObject.TableButtonBar.ObjectPrototype,
-                      };
-                      NewObject.Key = nanoid();
-                      AddObject(NewObject);
+                      AddObject(SchemeObject);
+                    }}
+                    OnDelete={() => {
+                      ShowDeleteModal(SelectedKey);
                     }}
                   />
                 ) : null}
