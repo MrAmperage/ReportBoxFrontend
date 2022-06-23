@@ -83,7 +83,13 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
               return Column;
             });
             return (
-              <div key={`${ParrentId}Children${ObjectIndex}`}>
+              <div
+                key={
+                  ParrentId != null
+                    ? `${ParrentId}Children${ObjectIndex}`
+                    : `Parrent${ObjectIndex}`
+                }
+              >
                 {'TableButtonBar' in SchemeObject ? (
                   <TableButtonBar
                     OnAdd={() => {
@@ -154,7 +160,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
       RequestScheme();
     }, []);
 
-    return GenerateLayout(Scheme);
+    return GenerateLayout(Scheme, null);
   })
 );
 export default ReferenceLayoutGenerator;
