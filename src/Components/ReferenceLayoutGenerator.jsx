@@ -15,6 +15,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
   observer((props) => {
     const [ObjectTable, SetNewObjectTable] = useState([]);
     const [SelectedKey, SetNewSelectedKey] = useState(null);
+    const [Scheme, SetNewScheme] = useState([]);
     const EditObject = (Key) => {
       let NewObjectTable = [...ObjectTable];
       let ObjectIndex = NewObjectTable.findIndex((Object) => {
@@ -41,14 +42,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
       NewObjectTable.unshift(ObjectPrototype);
       SetNewObjectTable(NewObjectTable);
     };
-    const GenerateLayout = (Scheme) => {
-      if ('Reference' in Scheme) {
-        return GenerateLayout(Scheme.Reference);
-      }
-      if ('Profile' in Scheme) {
-        return GenerateLayout(Scheme.Profile);
-      }
-
+    const GenerateLayout = (Scheme, ParrentId) => {
       return Scheme.map((SchemeObject, ObjectIndex) => {
         switch (SchemeObject.Type) {
           case 'Table':
@@ -89,7 +83,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
               return Column;
             });
             return (
-              <div key={SchemeObject.Id}>
+              <div key={`${ParrentId}Children${ObjectIndex}`}>
                 {'TableButtonBar' in SchemeObject ? (
                   <TableButtonBar
                     OnAdd={() => {
@@ -130,7 +124,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
       });
     };
     const RequestData = () => {
-      ApiFetch(
+      return ApiFetch(
         `api/${props.GlobalStore.GetCurrentTab.CurrentMenuElementKey}`,
         'GET',
         undefined,
@@ -145,8 +139,22 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         }
       );
     };
-    useEffect(RequestData, []);
-    return GenerateLayout(props.GlobalStore.GetCurrentTab.GetCurrentScheme);
+    const RequestScheme = () => {
+      ApiFetch(
+        `api/schemes/${props.GlobalStore.GetCurrentTab.GetCurrentSchemeId}`,
+        'GET',
+        undefined,
+        (Response) => {
+          SetNewScheme(Response.Data.Scheme.Items);
+        }
+      );
+    };
+    useEffect(() => {
+      RequestData();
+      RequestScheme();
+    }, []);
+
+    return GenerateLayout(Scheme);
   })
 );
 export default ReferenceLayoutGenerator;

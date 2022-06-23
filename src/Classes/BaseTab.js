@@ -13,15 +13,15 @@ export class BaseTab {
       CurrentMenuElementKey: observable,
       GetComponent: computed,
       GetCurrentMenuElement: computed,
-      GetCurrentScheme: computed,
+      GetCurrentSchemeId: computed,
       SetCurrentMenuElementKey: action,
     });
   }
   SetCurrentMenuElementKey(NewCurrentMenuElementKey) {
     this.CurrentMenuElementKey = NewCurrentMenuElementKey;
   }
-  get GetCurrentScheme() {
-    return this.GetCurrentMenuElement.scheme;
+  get GetCurrentSchemeId() {
+    return this.GetCurrentMenuElement.schemeid;
   }
   get GetCurrentMenuElement() {
     return this.Menu.find((MenuItem) => {
@@ -40,7 +40,7 @@ export class BaseTab {
       return {
         label: Element.Caption,
         key: Element.Id,
-        scheme: Element.Scheme.Scheme,
+        schemeid: Element.SchemeId,
       };
     });
   }
