@@ -261,7 +261,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
     };
     const RequestScheme = () => {
       ApiFetch(
-        `api/schemes/${props.GlobalStore.GetCurrentTab.GetCurrentSchemeId}`,
+        `api/Schemes/${props.GlobalStore.GetCurrentTab.GetCurrentSchemeId}`,
         'GET',
         undefined,
         (Response) => {
@@ -272,7 +272,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
     useEffect(() => {
       RequestData();
       RequestScheme();
-    }, []);
+    }, [props.GlobalStore.GetCurrentTab.CurrentMenuElementKey]);
 
     return GenerateLayout(Scheme, null);
   })
