@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
+import { SearchOutlined } from '@ant-design/icons';
 import {
   RowButtonsWrapperStyle,
   RowInputStyle,
@@ -17,7 +18,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [Scheme, SetNewScheme] = useState([]);
     const InputRef = React.createRef();
-
+    const [SearchString, SetNewSearchString] = useState(null);
     const EditObject = (Index) => {
       if (
         ObjectTable.some((Object) => {
@@ -120,6 +121,11 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         SetNewObjectTable(NewObjectTable);
       }
     };
+    const ClearSearch = (Event) => {
+      if (Event.key === 'Escape') {
+        SetNewSearchString(null);
+      }
+    };
     const GenerateLayout = (Scheme, ParrentId) => {
       return Scheme.map((SchemeObject, ObjectIndex) => {
         switch (SchemeObject.Type) {
@@ -133,6 +139,28 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                     },
                   };
                 };
+                Column.onFilter = (Value, Record) => {
+                  if (SearchString != null) {
+                    return Record[Value].toString()
+                      .toLowerCase()
+                      .includes(SearchString);
+                  } else {
+                    return true;
+                  }
+                };
+              }
+              if (Column.search) {
+                Column.filterIcon = <SearchOutlined />;
+                Column.filteredValue = [Column.key];
+                Column.filterDropdown = (
+                  <Input
+                    size="small"
+                    placeholder="Поиск"
+                    onPressEnter={(Event) => {
+                      SetNewSearchString(Event.target.value);
+                    }}
+                  />
+                );
               }
               if (Column.validate) {
                 Column.IsValid = () => {
@@ -269,7 +297,14 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         }
       );
     };
+    const AddEventListeners = () => {
+      document.addEventListener('keydown', ClearSearch, false);
+      return () => {
+        document.removeEventListener('keydown', ClearSearch, false);
+      };
+    };
     useEffect(() => {
+      AddEventListeners();
       RequestData();
       RequestScheme();
     }, [props.GlobalStore.GetCurrentTab.CurrentMenuElementKey]);
