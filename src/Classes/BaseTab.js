@@ -15,6 +15,7 @@ export class BaseTab {
       GetCurrentMenuElement: computed,
       GetCurrentSchemeId: computed,
       SetCurrentMenuElementKey: action,
+      GetCurrentMenuElementKey: computed,
     });
   }
   SetCurrentMenuElementKey(NewCurrentMenuElementKey) {
@@ -23,11 +24,15 @@ export class BaseTab {
   get GetCurrentSchemeId() {
     return this.GetCurrentMenuElement.schemeid;
   }
+  get GetCurrentMenuElementKey() {
+    return this.CurrentMenuElementKey;
+  }
   get GetCurrentMenuElement() {
     return this.Menu.find((MenuItem) => {
-      return MenuItem.Id == this.ChangeCurrentMenuElementKey;
+      return MenuItem.key == this.GetCurrentMenuElementKey;
     });
   }
+
   get GetComponent() {
     let ReactComponent = null;
     ReactComponent = this.Menu.find((MenuItem) => {
