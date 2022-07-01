@@ -14,22 +14,21 @@ import TableButtonBar from './TableButtonBar';
 
 const ReferenceLayoutGenerator = inject('GlobalStore')(
   observer((props) => {
-    const [ObjectTable, SetNewObjectTable] = useState([]);
+    const [ObjectTablesMap, SetNewObjectTablesMap] = useState(new Map());
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [Scheme, SetNewScheme] = useState([]);
-    const InputRef = React.createRef();
     const [SearchString, SetNewSearchString] = useState(null);
-    const EditObject = (Index) => {
+    const EditObject = (Index, ContainerId) => {
       if (
-        ObjectTable.some((Object) => {
+        ObjectTablesMap.get(ContainerId).some((Object) => {
           return Object.Edited;
         })
       ) {
         message.warning('Сначала завершите редактирование объекта');
       } else {
-        let NewObjectTable = [...ObjectTable];
-        NewObjectTable[Index].Edited = true;
-        SetNewObjectTable(NewObjectTable);
+        let NewObjectTableMap = new Map(ObjectTablesMap);
+        NewObjectTableMap.get(ContainerId)[Index].Edited = true;
+        SetNewObjectTablesMap(NewObjectTableMap);
       }
     };
     const DeleteObject = (Key) => {
@@ -126,16 +125,17 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         SetNewSearchString(null);
       }
     };
-    const GenerateLayout = (Scheme, ParrentId) => {
+    const GenerateLayout = (Scheme) => {
       return Scheme.map((SchemeObject, ObjectIndex) => {
         switch (SchemeObject.Type) {
           case 'Table':
             SchemeObject.Columns.map((Column) => {
               if (Column.edited) {
+                Column.InputRef = React.createRef();
                 Column.onCell = (Record, Index) => {
                   return {
-                    onDoubleClick: (event) => {
-                      EditObject(Index);
+                    onDoubleClick: (Event) => {
+                      EditObject(Index, SchemeObject.Id);
                     },
                   };
                 };
@@ -165,7 +165,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
               if (Column.validate) {
                 Column.IsValid = () => {
                   return new RegExp(Column.validate).test(
-                    InputRef.current.input.value
+                    Column.InputRef.current.input.value
                   );
                 };
               } else {
@@ -176,7 +176,9 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
               if (Column.unique) {
                 Column.IsUnique = () => {
                   return ObjectTable.every((Object) => {
-                    return Object.Caption != InputRef.current.input.value;
+                    return (
+                      Object.Caption != Column.InputRef.current.input.value
+                    );
                   });
                 };
               } else {
@@ -188,7 +190,11 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                 return Record.Edited ? (
                   <RowStyle>
                     <RowInputStyle>
-                      <Input size="small" defaultValue={Value} ref={InputRef} />
+                      <Input
+                        size="small"
+                        defaultValue={Value}
+                        ref={Column.InputRef}
+                      />
                     </RowInputStyle>
                     <RowButtonsWrapperStyle>
                       <Button
@@ -197,7 +203,10 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                         onClick={() => {
                           if (Column.IsValid()) {
                             if (Column.IsUnique()) {
-                              SaveObject(Index, InputRef.current.input.value);
+                              SaveObject(
+                                Index,
+                                Column.InputRef.current.input.value
+                              );
                             } else {
                               message.warning('Повторяющееся значение');
                             }
@@ -226,13 +235,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
               return Column;
             });
             return (
-              <div
-                key={
-                  ParrentId != null
-                    ? `${ParrentId}Children${ObjectIndex}`
-                    : `Parrent${ObjectIndex}`
-                }
-              >
+              <div key={SchemeObject.Id}>
                 {'TableButtonBar' in SchemeObject ? (
                   <TableButtonBar
                     OnAdd={() => {
@@ -262,7 +265,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                   }}
                   pagination={false}
                   rowKey="Key"
-                  dataSource={ObjectTable}
+                  dataSource={ObjectTablesMap.get(SchemeObject.Id)}
                   size="small"
                   columns={SchemeObject.Columns}
                 />
@@ -277,13 +280,22 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         'GET',
         undefined,
         (Response) => {
-          SetNewObjectTable(
-            Response.Data.map((Object) => {
-              Object.Key = nanoid();
-              Object.Edited = false;
-              return Object;
-            })
-          );
+          Response.Data.forEach((Container) => {
+            switch (Container.Type) {
+              case 'Table':
+                let NewObjectTablesMap = new Map();
+                NewObjectTablesMap.set(
+                  Container.Id,
+                  Container.Container.map((Object) => {
+                    Object.Key = nanoid();
+                    Object.Edited = false;
+                    return Object;
+                  })
+                );
+                SetNewObjectTablesMap(NewObjectTablesMap);
+                break;
+            }
+          });
         }
       );
     };
@@ -309,7 +321,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
       RequestScheme();
     }, [props.GlobalStore.GetCurrentTab.CurrentMenuElementKey]);
 
-    return GenerateLayout(Scheme, null);
+    return GenerateLayout(Scheme);
   })
 );
 export default ReferenceLayoutGenerator;
