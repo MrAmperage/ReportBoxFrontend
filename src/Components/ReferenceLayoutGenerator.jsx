@@ -18,16 +18,16 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [Scheme, SetNewScheme] = useState([]);
     const [SearchString, SetNewSearchString] = useState(null);
-    const EditObject = (Index, ContainerId) => {
+    const EditObject = (Index, ContainerId, Feeld) => {
       if (
         ObjectTablesMap.get(ContainerId).some((Object) => {
-          return Object.Edited;
+          return Object[Feeld].Edited;
         })
       ) {
         message.warning('Сначала завершите редактирование объекта');
       } else {
         let NewObjectTableMap = new Map(ObjectTablesMap);
-        NewObjectTableMap.get(ContainerId)[Index].Edited = true;
+        NewObjectTableMap.get(ContainerId)[Index][Feeld].Edited = true;
         SetNewObjectTablesMap(NewObjectTableMap);
       }
     };
@@ -131,11 +131,56 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
           case 'Table':
             SchemeObject.Columns.map((Column) => {
               if (Column.edited) {
+                Column.render = (Value, Record, Index) => {
+                  return Record.Edited ? (
+                    <RowStyle>
+                      <RowInputStyle>
+                        <Input
+                          size="small"
+                          defaultValue={Value.Value}
+                          ref={Column.InputRef}
+                        />
+                      </RowInputStyle>
+                      <RowButtonsWrapperStyle>
+                        <Button
+                          size="small"
+                          type="primary"
+                          onClick={() => {
+                            if (Column.IsValid()) {
+                              if (Column.IsUnique()) {
+                                SaveObject(
+                                  Index,
+                                  Column.InputRef.current.input.value
+                                );
+                              } else {
+                                message.warning('Повторяющееся значение');
+                              }
+                            } else {
+                              message.warning('Неверное значение');
+                            }
+                          }}
+                        >
+                          Сохранить
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            CancelEditObject(Index);
+                          }}
+                        >
+                          Отмена
+                        </Button>
+                      </RowButtonsWrapperStyle>
+                    </RowStyle>
+                  ) : (
+                    <RowTablePointerStyle>{Value.Value}</RowTablePointerStyle>
+                  );
+                };
                 Column.InputRef = React.createRef();
                 Column.onCell = (Record, Index) => {
                   return {
                     onDoubleClick: (Event) => {
-                      EditObject(Index, SchemeObject.Id);
+                      EditObject(Index, SchemeObject.Id, Column.dataIndex);
                     },
                   };
                 };
@@ -186,51 +231,6 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                   return true;
                 };
               }
-              Column.render = (Value, Record, Index) => {
-                return Record.Edited ? (
-                  <RowStyle>
-                    <RowInputStyle>
-                      <Input
-                        size="small"
-                        defaultValue={Value}
-                        ref={Column.InputRef}
-                      />
-                    </RowInputStyle>
-                    <RowButtonsWrapperStyle>
-                      <Button
-                        size="small"
-                        type="primary"
-                        onClick={() => {
-                          if (Column.IsValid()) {
-                            if (Column.IsUnique()) {
-                              SaveObject(
-                                Index,
-                                Column.InputRef.current.input.value
-                              );
-                            } else {
-                              message.warning('Повторяющееся значение');
-                            }
-                          } else {
-                            message.warning('Неверное значение');
-                          }
-                        }}
-                      >
-                        Сохранить
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          CancelEditObject(Index);
-                        }}
-                      >
-                        Отмена
-                      </Button>
-                    </RowButtonsWrapperStyle>
-                  </RowStyle>
-                ) : (
-                  <RowTablePointerStyle>{Value}</RowTablePointerStyle>
-                );
-              };
 
               return Column;
             });
@@ -274,8 +274,8 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         }
       });
     };
-    const RequestData = () => {
-      return ApiFetch(
+    const RequestData = (Scheme) => {
+      ApiFetch(
         `api/${props.GlobalStore.GetCurrentTab.CurrentMenuElementKey}`,
         'GET',
         undefined,
@@ -286,10 +286,25 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                 let NewObjectTablesMap = new Map();
                 NewObjectTablesMap.set(
                   Container.Id,
-                  Container.Container.map((Object) => {
-                    Object.Key = nanoid();
-                    Object.Edited = false;
-                    return Object;
+                  Container.Container.map((TableRow) => {
+                    let CurrentTableScheme = Scheme.find((SchemeObject) => {
+                      return SchemeObject.Id == Container.Id;
+                    });
+                    Object.keys(TableRow).forEach((Feeld) => {
+                      CurrentTableScheme.Columns.forEach((Column) => {
+                        if (Feeld == Column.key) {
+                          if (Column.edited) {
+                            TableRow[Feeld] = {
+                              Value: TableRow[Feeld],
+                              Edited: false,
+                            };
+                          }
+                        }
+                      });
+                    });
+                    TableRow.Key = nanoid();
+                    console.log(TableRow);
+                    return TableRow;
                   })
                 );
                 SetNewObjectTablesMap(NewObjectTablesMap);
@@ -306,6 +321,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         undefined,
         (Response) => {
           SetNewScheme(Response.Data.Scheme.Items);
+          RequestData(Response.Data.Scheme.Items);
         }
       );
     };
@@ -317,7 +333,6 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
     };
     useEffect(() => {
       AddEventListeners();
-      RequestData();
       RequestScheme();
     }, [props.GlobalStore.GetCurrentTab.CurrentMenuElementKey]);
 
