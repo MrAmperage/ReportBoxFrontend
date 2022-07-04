@@ -4,13 +4,8 @@ import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
 import { SearchOutlined } from '@ant-design/icons';
-import {
-  RowButtonsWrapperStyle,
-  RowInputStyle,
-  RowStyle,
-  RowTablePointerStyle,
-} from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
+import { ColumnTableSetRender } from '../ReferenceGenerator/Table';
 
 const ReferenceLayoutGenerator = inject('GlobalStore')(
   observer((props) => {
@@ -53,25 +48,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         SetNewSelectedKey(null);
       }
     };
-    const SaveObject = (Index, Value) => {
-      let NewObjectTable = [...ObjectTable];
-      NewObjectTable[Index].Caption = Value;
-      NewObjectTable[Index].Edited = false;
-      ApiFetch(
-        `api/${props.GlobalStore.GetCurrentTab.CurrentMenuElementKey}${
-          'Id' in NewObjectTable[Index] ? `/${NewObjectTable[Index].Id}` : ''
-        }`,
-        `${'Id' in NewObjectTable[Index] ? 'PATCH' : 'POST'}`,
-        NewObjectTable[Index],
-        (Response) => {
-          let NewObject = Response.Data;
-          NewObject.Key = nanoid();
-          NewObject.Edited = false;
-          NewObjectTable[Index] = NewObject;
-          SetNewObjectTable(NewObjectTable);
-        }
-      );
-    };
+
     const ShowDeleteModal = (Key) => {
       if (Key != null && ObjectTable.length > 0) {
         Modal.confirm({
@@ -90,35 +67,32 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         });
       }
     };
-    const CancelEditObject = (Index) => {
-      let NewObjectTable = [...ObjectTable];
-      if (!('Id' in NewObjectTable[Index])) {
-        NewObjectTable.splice(Index, 1);
-        if (NewObjectTable.length == 0) {
-          SetNewSelectedKey(null);
-        }
-      } else {
-        NewObjectTable[Index].Edited = false;
-      }
 
-      SetNewObjectTable(NewObjectTable);
-    };
     const AddObject = (SchemeObject) => {
-      if (
-        ObjectTable.some((Object) => {
-          return Object.Edited;
-        })
-      ) {
-        message.warning('Сначала завершите редактирование объекта');
-      } else {
-        let ObjectPrototype = {
-          ...SchemeObject.TableButtonBar.ObjectPrototype,
-        };
-        ObjectPrototype.Key = nanoid();
-        let NewObjectTable = [...ObjectTable];
-        NewObjectTable.unshift(ObjectPrototype);
-        SetNewObjectTable(NewObjectTable);
-      }
+      let ObjectPrototype = {
+        ...SchemeObject.TableButtonBar.ObjectPrototype,
+      };
+      Object.keys(ObjectPrototype).forEach((Feeld) => {
+        let CurrentScheme = Scheme.find((Container) => {
+          return Container.Id == SchemeObject.Id;
+        });
+        CurrentScheme.Columns.forEach((Column) => {
+          if (Feeld == Column.key) {
+            if (Column.edited) {
+              ObjectPrototype[`${Column.key}Edited`] = true;
+              ObjectPrototype[`${Column.key}Ref`] = React.createRef();
+            }
+          }
+        });
+      });
+
+      ObjectPrototype.Key = nanoid();
+      console.log(ObjectPrototype);
+      let Table = [...ObjectTablesMap.get(SchemeObject.Id)];
+      Table.unshift(ObjectPrototype);
+      SetNewObjectTablesMap(
+        new Map(ObjectTablesMap.set(SchemeObject.Id, Table))
+      );
     };
     const ClearSearch = (Event) => {
       if (Event.key === 'Escape') {
@@ -130,53 +104,14 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         switch (SchemeObject.Type) {
           case 'Table':
             SchemeObject.Columns.map((Column) => {
+              Column.render = ColumnTableSetRender(
+                Column,
+                ObjectTablesMap,
+                SetNewObjectTablesMap,
+                SchemeObject,
+                props.GlobalStore.GetCurrentTab.CurrentMenuElementKey
+              );
               if (Column.edited) {
-                Column.render = (Value, Record, Index) => {
-                  return Record[`${Column.dataIndex}Edited`] ? (
-                    <RowStyle>
-                      <RowInputStyle>
-                        <Input
-                          size="small"
-                          defaultValue={Value}
-                          ref={Column.InputRef}
-                        />
-                      </RowInputStyle>
-                      <RowButtonsWrapperStyle>
-                        <Button
-                          size="small"
-                          type="primary"
-                          onClick={() => {
-                            if (Column.IsValid()) {
-                              if (Column.IsUnique()) {
-                                SaveObject(
-                                  Index,
-                                  Column.InputRef.current.input.value
-                                );
-                              } else {
-                                message.warning('Повторяющееся значение');
-                              }
-                            } else {
-                              message.warning('Неверное значение');
-                            }
-                          }}
-                        >
-                          Сохранить
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            CancelEditObject(Index);
-                          }}
-                        >
-                          Отмена
-                        </Button>
-                      </RowButtonsWrapperStyle>
-                    </RowStyle>
-                  ) : (
-                    <RowTablePointerStyle>{Value}</RowTablePointerStyle>
-                  );
-                };
-                Column.InputRef = React.createRef();
                 Column.onCell = (Record, Index) => {
                   return {
                     onDoubleClick: (Event) => {
@@ -210,24 +145,10 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
               }
               if (Column.validate) {
                 Column.IsValid = () => {
-                  return new RegExp(Column.validate).test(
-                    Column.InputRef.current.input.value
-                  );
-                };
-              } else {
-                Column.IsValid = () => {
                   return true;
                 };
               }
               if (Column.unique) {
-                Column.IsUnique = () => {
-                  return ObjectTable.every((Object) => {
-                    return (
-                      Object.Caption != Column.InputRef.current.input.value
-                    );
-                  });
-                };
-              } else {
                 Column.IsUnique = () => {
                   return true;
                 };
@@ -296,6 +217,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                         if (Feeld == Column.key) {
                           if (Column.edited) {
                             TableRow[`${Column.key}Edited`] = false;
+                            TableRow[`${Column.key}Ref`] = React.createRef();
                           }
                         }
                       });
