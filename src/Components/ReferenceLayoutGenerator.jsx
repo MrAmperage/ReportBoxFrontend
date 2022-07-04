@@ -27,7 +27,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
         message.warning('Сначала завершите редактирование объекта');
       } else {
         let NewObjectTableMap = new Map(ObjectTablesMap);
-        NewObjectTableMap.get(ContainerId)[Index][Feeld].Edited = true;
+        NewObjectTableMap.get(ContainerId)[Index][`${Feeld}Edited`] = true;
         SetNewObjectTablesMap(NewObjectTableMap);
       }
     };
@@ -132,12 +132,12 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
             SchemeObject.Columns.map((Column) => {
               if (Column.edited) {
                 Column.render = (Value, Record, Index) => {
-                  return Record.Edited ? (
+                  return Record[`${Column.dataIndex}Edited`] ? (
                     <RowStyle>
                       <RowInputStyle>
                         <Input
                           size="small"
-                          defaultValue={Value.Value}
+                          defaultValue={Value}
                           ref={Column.InputRef}
                         />
                       </RowInputStyle>
@@ -173,7 +173,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                       </RowButtonsWrapperStyle>
                     </RowStyle>
                   ) : (
-                    <RowTablePointerStyle>{Value.Value}</RowTablePointerStyle>
+                    <RowTablePointerStyle>{Value}</RowTablePointerStyle>
                   );
                 };
                 Column.InputRef = React.createRef();
@@ -184,19 +184,20 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                     },
                   };
                 };
+              }
+              if (Column.search) {
+                Column.filteredValue = [Column.dataIndex];
                 Column.onFilter = (Value, Record) => {
                   if (SearchString != null) {
-                    return Record[Value].toString()
+                    return Record[Column.dataIndex]
+                      .toString()
                       .toLowerCase()
                       .includes(SearchString);
                   } else {
                     return true;
                   }
                 };
-              }
-              if (Column.search) {
                 Column.filterIcon = <SearchOutlined />;
-                Column.filteredValue = [Column.key];
                 Column.filterDropdown = (
                   <Input
                     size="small"
@@ -294,10 +295,7 @@ const ReferenceLayoutGenerator = inject('GlobalStore')(
                       CurrentTableScheme.Columns.forEach((Column) => {
                         if (Feeld == Column.key) {
                           if (Column.edited) {
-                            TableRow[Feeld] = {
-                              Value: TableRow[Feeld],
-                              Edited: false,
-                            };
+                            TableRow[`${Column.key}Edited`] = false;
                           }
                         }
                       });
