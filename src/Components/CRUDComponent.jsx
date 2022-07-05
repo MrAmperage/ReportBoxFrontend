@@ -143,10 +143,14 @@ const CRUDComponent = inject('GlobalStore')(
         SetNewSearchString(null);
       }
     };
-    useEffect(() => {
+    const EventListener = () => {
       document.addEventListener('keydown', ClearSearch, false);
+      return document.removeEventListener('keydown', ClearSearch, false);
+    };
+    useEffect(() => {
+      EventListener();
       RequestData();
-    }, []);
+    }, [props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey]);
     return (
       <>
         <TableButtonBar

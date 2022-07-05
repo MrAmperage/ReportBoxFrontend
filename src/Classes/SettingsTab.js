@@ -14,6 +14,22 @@ export default class SettingTab extends BaseTab {
           MenuElement.component = React.lazy(() =>
             import('../Components/CRUDComponent')
           );
+          break;
+        case 'Manufacturers':
+          MenuElement.component = React.lazy(() =>
+            import('../Components/CRUDComponent')
+          );
+          break;
+        case 'TransportTypes':
+          MenuElement.component = React.lazy(() =>
+            import('../Components/CRUDComponent')
+          );
+          break;
+        case 'UnitStates':
+          MenuElement.component = React.lazy(() =>
+            import('../Components/CRUDComponent')
+          );
+          break;
       }
 
       return MenuElement;

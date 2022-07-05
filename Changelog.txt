@@ -99,3 +99,7 @@
 
 Версия 0.0.0.4
 1.Полностью написан CRUDComponent
+
+Версия 0.0.0.4a
+1.Добавлен EventManager в CRUDComponent
+2.Для определенных Id установлен CRUDComponent как основной компонент.
