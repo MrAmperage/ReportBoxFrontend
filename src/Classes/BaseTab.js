@@ -7,12 +7,12 @@ export class BaseTab {
     this.Caption = TabObject.Caption;
     this.Key = this.GenerateTabKey(TabObject.Id, OpenTabs);
     this.Menu = this.GenerateMenu(TabObject);
-    this.CurrentMenuElementKey = TabObject.LeftMenu[0].Id;
+    this.CurrentMenuElementKey =
+      TabObject.LeftMenu.length > 0 ? TabObject.LeftMenu[0].Id : null;
     this.LeftSidebar = [];
     makeObservable(this, {
       CurrentMenuElementKey: observable,
       GetComponent: computed,
-      GetCurrentMenuElement: computed,
       SetCurrentMenuElementKey: action,
       GetCurrentMenuElementKey: computed,
     });
@@ -23,17 +23,15 @@ export class BaseTab {
   get GetCurrentMenuElementKey() {
     return this.CurrentMenuElementKey;
   }
-  get GetCurrentMenuElement() {
-    return this.Menu.find((MenuItem) => {
-      return MenuItem.key == this.GetCurrentMenuElementKey;
-    });
-  }
 
   get GetComponent() {
-    let ReactComponent = null;
-    ReactComponent = this.Menu.find((MenuItem) => {
-      return MenuItem.key == this.CurrentMenuElementKey;
-    }).component;
+    let ReactComponent = React.lazy(() => import('../Components/MenuNotFound'));
+    if (this.Menu.length > 0) {
+      ReactComponent = this.Menu.find((MenuItem) => {
+        return MenuItem.key == this.CurrentMenuElementKey;
+      }).component;
+    }
+
     return <ReactComponent />;
   }
   GenerateMenu(TabObject) {
