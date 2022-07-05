@@ -25,7 +25,6 @@ const CRUDComponent = inject('GlobalStore')(
             Response.Data.map((Object) => {
               Object.Key = nanoid();
               Object.Edited = false;
-              Object.InputRef = React.createRef();
               return Object;
             })
           );
@@ -72,29 +71,22 @@ const CRUDComponent = inject('GlobalStore')(
               title: 'Наименование',
               dataIndex: 'Caption',
               key: 'Caption',
-              render: (Value, Record, Index) => {
-                if (Record.Edited) {
-                  return (
-                    <RowStyle>
-                      <RowInputStyle>
-                        <Input
-                          size="small"
-                          defaultValue={Value}
-                          ref={Record.InputRef}
-                        />
-                      </RowInputStyle>
-                      <RowButtonsWrapperStyle>
-                        <Button size="small" type="primary">
-                          Сохранить
-                        </Button>
-                        <Button size="small">Отмена</Button>
-                      </RowButtonsWrapperStyle>
-                    </RowStyle>
-                  );
-                } else {
-                  return <RowTablePointerStyle>{Value}</RowTablePointerStyle>;
-                }
-              },
+              render: (Value, Record, Index) =>
+                Record.Edited ? (
+                  <RowStyle>
+                    <RowInputStyle>
+                      <Input size="small" defaultValue={Value} />
+                    </RowInputStyle>
+                    <RowButtonsWrapperStyle>
+                      <Button size="small" type="primary">
+                        Сохранить
+                      </Button>
+                      <Button size="small">Отмена</Button>
+                    </RowButtonsWrapperStyle>
+                  </RowStyle>
+                ) : (
+                  <RowTablePointerStyle>{Value}</RowTablePointerStyle>
+                ),
             },
           ]}
         />
