@@ -28,7 +28,7 @@ export class BaseTab {
     let ReactComponent = React.lazy(() => import('../Components/MenuNotFound'));
     if (this.Menu.length > 0) {
       ReactComponent = this.Menu.find((MenuItem) => {
-        return MenuItem.key == this.CurrentMenuElementKey;
+        return MenuItem.key == this.GetCurrentMenuElementKey;
       }).component;
     }
 

@@ -12,8 +12,8 @@ const LeftMenu = inject('GlobalStore')(
           );
         }}
         items={props.GlobalStore.GetCurrentTab.Menu}
-        defaultSelectedKeys={[
-          props.GlobalStore.GetCurrentTab.CurrentMenuElementKey,
+        selectedKeys={[
+          props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey,
         ]}
       />
     ) : null;
