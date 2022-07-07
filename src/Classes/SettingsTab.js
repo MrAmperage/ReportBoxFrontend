@@ -12,7 +12,12 @@ export default class SettingTab extends BaseTab {
       switch (MenuElement.key) {
         case 'UnitTypes':
           MenuElement.component = React.lazy(() =>
-            import('../Components/CRUDComponent')
+            import('../Components/UsersReference')
+          );
+          break;
+        case 'Users':
+          MenuElement.component = React.lazy(() =>
+            import('../Components/UsersReference')
           );
           break;
         case 'Manufacturers':
