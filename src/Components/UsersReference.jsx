@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
+const UserProfile = React.lazy(() => import('../Components/UserProfile'));
 const UsersReference = inject('GlobalStore')(
   observer((props) => {
     const [SelectedKey, SetNewSelectedKey] = useState(null);
@@ -25,6 +26,9 @@ const UsersReference = inject('GlobalStore')(
     return (
       <>
         <Modal
+          title="Профиль пользователя"
+          width="450px"
+          closable={false}
           maskClosable={false}
           okButtonProps={{ size: 'small' }}
           cancelButtonProps={{ size: 'small' }}
@@ -34,7 +38,11 @@ const UsersReference = inject('GlobalStore')(
           onCancel={() => {
             SetNewShowModal(false);
           }}
-        ></Modal>
+        >
+          <React.Suspense>
+            <UserProfile />
+          </React.Suspense>
+        </Modal>
         <TableButtonBar OnAdd={() => {}} OnDelete={() => {}} />
         <Table
           scroll={{ y: 700 }}
