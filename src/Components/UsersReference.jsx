@@ -10,6 +10,8 @@ const UsersReference = inject('GlobalStore')(
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [UsersTable, SetNewUsersTable] = useState([]);
     const [ShowModal, SetNewShowModal] = useState(false);
+    const [Profile, SetNewProfile] = useState(null);
+    const [Roles, SetNewRoles] = useState([]);
     const RequestData = () => {
       ApiFetch(
         `api/${props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey}`,
@@ -19,6 +21,24 @@ const UsersReference = inject('GlobalStore')(
           SetNewUsersTable(Response.Data);
         }
       );
+    };
+    const RequestProfile = (Id) => {
+      let PromiseArray = [];
+      PromiseArray.push(
+        ApiFetch(`api/Users/${Id}`, 'GET', undefined, (Response) => {
+          SetNewProfile(Response.Data);
+        })
+      );
+      PromiseArray.push(
+        ApiFetch(`api/Roles`, 'GET', undefined, (Response) => {
+          SetNewRoles(
+            Response.Data.map((Role) => {
+              return { value: Role.Id, label: Role.Rolename };
+            })
+          );
+        })
+      );
+      return Promise.all(PromiseArray);
     };
     useEffect(() => {
       RequestData();
@@ -40,7 +60,7 @@ const UsersReference = inject('GlobalStore')(
           }}
         >
           <React.Suspense>
-            <UserProfile />
+            <UserProfile Profile={Profile} Roles={Roles} />
           </React.Suspense>
         </Modal>
         <TableButtonBar OnAdd={() => {}} OnDelete={() => {}} />
@@ -64,7 +84,9 @@ const UsersReference = inject('GlobalStore')(
                 SetNewSelectedKey(Record.Id);
               },
               onDoubleClick: () => {
-                SetNewShowModal(true);
+                RequestProfile(Record.Id).then(() => {
+                  SetNewShowModal(true);
+                });
               },
             };
           }}

@@ -15,7 +15,11 @@ const UserProfile = inject('GlobalStore')(
           <ProfileRowElement>Имя пользователя:</ProfileRowElement>
           <ProfileRowElement>
             <GlobalInputStyle>
-              <Input size="small" width="190px" />
+              <Input
+                size="small"
+                width="190px"
+                value={props.Profile.Username}
+              />
             </GlobalInputStyle>
           </ProfileRowElement>
         </RowProfileWrapper>
@@ -30,13 +34,17 @@ const UserProfile = inject('GlobalStore')(
         <RowProfileWrapper>
           <ProfileRowElement>Выбор роли:</ProfileRowElement>
           <ProfileRowElement>
-            <Select size="small" />
+            <Select
+              size="small"
+              options={props.Roles}
+              value={props.Profile.RoleId}
+            />
           </ProfileRowElement>
         </RowProfileWrapper>
         <RowProfileWrapper>
           <ProfileRowElement>Доступ включен:</ProfileRowElement>
           <ProfileRowElement>
-            <Checkbox />
+            <Checkbox checked={props.Profile.Enabled} />
           </ProfileRowElement>
         </RowProfileWrapper>
       </ProfileWrapper>
