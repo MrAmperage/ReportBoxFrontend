@@ -10,12 +10,6 @@ export const RowInputStyle = styled.div`
 
 export const RowStyle = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 350px;
-`;
-
-export const RowButtonsWrapperStyle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 160px;
+  justify-content: ${(props) => props.justifyContent};
+  width: ${(props) => props.width};
 `;

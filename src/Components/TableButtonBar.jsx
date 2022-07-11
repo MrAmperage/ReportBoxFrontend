@@ -1,12 +1,12 @@
 import { Button } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { RowButtonsWrapperStyle } from '../Styles/TableStyles';
+import { RowStyle } from '../Styles/TableStyles';
 
 const TableButtonBar = inject('GlobalStore')(
   observer((props) => {
     return (
-      <RowButtonsWrapperStyle>
+      <RowStyle width="160px" justifyContent="space-between">
         <Button
           type="primary"
           size="small"
@@ -26,7 +26,7 @@ const TableButtonBar = inject('GlobalStore')(
         >
           Удалить
         </Button>
-      </RowButtonsWrapperStyle>
+      </RowStyle>
     );
   })
 );

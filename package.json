@@ -27,6 +27,7 @@
     "styled-components": "^5.3.5"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "antd": "^4.21.6",
     "mobx": "^6.6.1",
     "mobx-react": "^7.5.2",

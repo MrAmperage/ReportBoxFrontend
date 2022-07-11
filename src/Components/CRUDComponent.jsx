@@ -4,7 +4,6 @@ import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import {
-  RowButtonsWrapperStyle,
   RowInputStyle,
   RowStyle,
   RowTablePointerStyle,
@@ -215,11 +214,11 @@ const CRUDComponent = inject('GlobalStore')(
               ),
               render: (Value, Record, Index) =>
                 Record.Edited ? (
-                  <RowStyle>
+                  <RowStyle width="350px" justifyContent="space-between">
                     <RowInputStyle>
                       <Input size="small" defaultValue={Value} ref={InputRef} />
                     </RowInputStyle>
-                    <RowButtonsWrapperStyle>
+                    <RowStyle width="160px" justifyContent="space-between">
                       <Button
                         size="small"
                         type="primary"
@@ -238,7 +237,7 @@ const CRUDComponent = inject('GlobalStore')(
                       >
                         Отмена
                       </Button>
-                    </RowButtonsWrapperStyle>
+                    </RowStyle>
                   </RowStyle>
                 ) : (
                   <RowTablePointerStyle>{Value}</RowTablePointerStyle>
