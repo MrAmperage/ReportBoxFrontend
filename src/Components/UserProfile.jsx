@@ -1,5 +1,6 @@
 import { Button, Checkbox, DatePicker, Input, Select } from 'antd';
 import { inject, observer } from 'mobx-react';
+import Bcrypt from 'bcryptjs';
 import React, { useState } from 'react';
 import { GlobalInputStyle } from '../Styles/GlobalStyle';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
@@ -13,6 +14,9 @@ import Moment from 'moment';
 const UserProfile = inject('GlobalStore')(
   observer((props) => {
     const [ShowPasswordInput, SetNewShowPasswordInput] = useState(false);
+    const SavePassword = (Password) => {
+      return Bcrypt.hash(Password, 12);
+    };
     return (
       <ProfileWrapper GridRowsTemplate="1fr 1fr 1fr 1fr 1fr 1fr">
         <RowProfileWrapper>
@@ -48,7 +52,12 @@ const UserProfile = inject('GlobalStore')(
                 <RowStyle width="140px" justifyContent="space-evenly">
                   <Button
                     onClick={() => {
-                      SetNewShowPasswordInput(false);
+                      SavePassword(props.Profile.NotHashedPassword).then(
+                        (Password) => {
+                          props.ProfileHandler('Password', Password);
+                          SetNewShowPasswordInput(false);
+                        }
+                      );
                     }}
                     icon={<CheckOutlined />}
                     size="small"
