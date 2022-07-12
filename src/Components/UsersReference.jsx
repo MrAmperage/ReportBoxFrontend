@@ -1,5 +1,6 @@
-import { Modal, Table } from 'antd';
+import { message, Modal, Table } from 'antd';
 import { inject, observer } from 'mobx-react';
+import Moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
@@ -13,7 +14,7 @@ const UsersReference = inject('GlobalStore')(
     const [Profile, SetNewProfile] = useState(null);
     const [Roles, SetNewRoles] = useState([]);
     const RequestData = () => {
-      ApiFetch(
+      return ApiFetch(
         `api/${props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey}`,
         'GET',
         undefined,
@@ -21,6 +22,43 @@ const UsersReference = inject('GlobalStore')(
           SetNewUsersTable(Response.Data);
         }
       );
+    };
+    const SaveProfile = () => {
+      if (Profile.Password.length > 0 && Profile.Username.length > 0) {
+        ApiFetch(
+          `api/Users${'Id' in Profile ? `/${Profile.Id}` : ''}`,
+          `${'Id' in Profile ? 'PATCH' : 'POST'}`,
+          Profile,
+          (Response) => {
+            RequestData().then(() => {
+              SetNewShowModal(false);
+            });
+          }
+        );
+      } else {
+        message.warning('Укажите имя пользователя и пароль');
+      }
+    };
+    const AddUser = () => {
+      ApiFetch(`api/Roles`, 'GET', undefined, (Response) => {
+        SetNewRoles(
+          Response.Data.map((Role) => {
+            return { value: Role.Id, label: Role.Rolename };
+          })
+        );
+        SetNewProfile({
+          Username: '',
+          Password: '',
+          NotHashedPassword: '',
+          Enabled: false,
+          RoleId: Response.Data.find((Role) => {
+            return Role.Rolename == '-';
+          }).Id,
+          StartDate: Moment().format(),
+          EndDate: Moment().format(),
+        });
+        SetNewShowModal(true);
+      });
     };
     const ProfileHandler = (Feeld, Value) => {
       let NewProfile = { ...Profile };
@@ -64,6 +102,9 @@ const UsersReference = inject('GlobalStore')(
           onCancel={() => {
             SetNewShowModal(false);
           }}
+          onOk={() => {
+            SaveProfile();
+          }}
         >
           <React.Suspense>
             <UserProfile
@@ -73,7 +114,12 @@ const UsersReference = inject('GlobalStore')(
             />
           </React.Suspense>
         </Modal>
-        <TableButtonBar OnAdd={() => {}} OnDelete={() => {}} />
+        <TableButtonBar
+          OnAdd={() => {
+            AddUser();
+          }}
+          OnDelete={() => {}}
+        />
         <Table
           scroll={{ y: 700 }}
           pagination={false}

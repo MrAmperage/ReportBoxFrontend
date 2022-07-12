@@ -6,6 +6,7 @@ import { GlobalInputStyle } from '../Styles/GlobalStyle';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import {
   ProfileRowElement,
+  ProfileSelectStyle,
   ProfileWrapper,
   RowProfileWrapper,
 } from '../Styles/ProfileStyles';
@@ -92,6 +93,7 @@ const UserProfile = inject('GlobalStore')(
           <ProfileRowElement>Выбор роли:</ProfileRowElement>
           <ProfileRowElement>
             <Select
+              dropdownMatchSelectWidth={130}
               onChange={(Value) => {
                 props.ProfileHandler('RoleId', Value);
               }}
