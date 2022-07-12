@@ -35,7 +35,16 @@ const UserProfile = inject('GlobalStore')(
           <ProfileRowElement>
             {ShowPasswordInput ? (
               <RowStyle width="197px" justifyContent="space-between">
-                <Input size="small" />
+                <Input
+                  size="small"
+                  value={props.Profile.NotHashedPassword}
+                  onChange={(Event) => {
+                    props.ProfileHandler(
+                      'NotHashedPassword',
+                      Event.target.value
+                    );
+                  }}
+                />
                 <RowStyle width="140px" justifyContent="space-evenly">
                   <Button
                     onClick={() => {

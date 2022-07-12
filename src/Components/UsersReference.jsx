@@ -31,6 +31,7 @@ const UsersReference = inject('GlobalStore')(
       let PromiseArray = [];
       PromiseArray.push(
         ApiFetch(`api/Users/${Id}`, 'GET', undefined, (Response) => {
+          Response.Data.NotHashedPassword = '';
           SetNewProfile(Response.Data);
         })
       );
