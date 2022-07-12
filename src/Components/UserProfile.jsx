@@ -9,17 +9,20 @@ import {
   RowProfileWrapper,
 } from '../Styles/ProfileStyles';
 import { RowStyle } from '../Styles/TableStyles';
-const { RangePicker } = DatePicker;
+import Moment from 'moment';
 const UserProfile = inject('GlobalStore')(
   observer((props) => {
     const [ShowPasswordInput, SetNewShowPasswordInput] = useState(false);
     return (
-      <ProfileWrapper GridRowsTemplate="1fr 1fr 1fr 1fr 1fr">
+      <ProfileWrapper GridRowsTemplate="1fr 1fr 1fr 1fr 1fr 1fr">
         <RowProfileWrapper>
           <ProfileRowElement>Имя пользователя:</ProfileRowElement>
           <ProfileRowElement>
             <GlobalInputStyle>
               <Input
+                onChange={(Event) => {
+                  props.ProfileHandler('Username', Event.target.value);
+                }}
                 size="small"
                 width="190px"
                 value={props.Profile.Username}
@@ -71,6 +74,9 @@ const UserProfile = inject('GlobalStore')(
           <ProfileRowElement>Выбор роли:</ProfileRowElement>
           <ProfileRowElement>
             <Select
+              onChange={(Value) => {
+                props.ProfileHandler('RoleId', Value);
+              }}
               size="small"
               options={props.Roles}
               value={props.Profile.RoleId}
@@ -80,13 +86,40 @@ const UserProfile = inject('GlobalStore')(
         <RowProfileWrapper>
           <ProfileRowElement>Доступ включен:</ProfileRowElement>
           <ProfileRowElement>
-            <Checkbox checked={props.Profile.Enabled} />
+            <Checkbox
+              checked={props.Profile.Enabled}
+              onChange={(Event) => {
+                props.ProfileHandler('Enabled', Event.target.checked);
+              }}
+            />
           </ProfileRowElement>
         </RowProfileWrapper>
         <RowProfileWrapper>
-          <ProfileRowElement>Период:</ProfileRowElement>
+          <ProfileRowElement>Доступ с:</ProfileRowElement>
           <ProfileRowElement>
-            <RangePicker showTime={true} size="small" />
+            <DatePicker
+              onOk={(MomentObject) => {
+                props.ProfileHandler('StartDate', MomentObject.format());
+              }}
+              format="DD.MM.YYY HH:mm:ss"
+              size="small"
+              showTime={true}
+              value={Moment(props.Profile.StartDate)}
+            />
+          </ProfileRowElement>
+        </RowProfileWrapper>
+        <RowProfileWrapper>
+          <ProfileRowElement>Доступ по:</ProfileRowElement>
+          <ProfileRowElement>
+            <DatePicker
+              onOk={(MomentObject) => {
+                props.ProfileHandler('EndDate', MomentObject.format());
+              }}
+              format="DD.MM.YYY HH:mm:ss"
+              size="small"
+              showTime={true}
+              value={Moment(props.Profile.EndDate)}
+            />
           </ProfileRowElement>
         </RowProfileWrapper>
       </ProfileWrapper>

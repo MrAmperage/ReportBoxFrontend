@@ -22,6 +22,11 @@ const UsersReference = inject('GlobalStore')(
         }
       );
     };
+    const ProfileHandler = (Feeld, Value) => {
+      let NewProfile = { ...Profile };
+      NewProfile[Feeld] = Value;
+      SetNewProfile(NewProfile);
+    };
     const RequestProfile = (Id) => {
       let PromiseArray = [];
       PromiseArray.push(
@@ -60,7 +65,11 @@ const UsersReference = inject('GlobalStore')(
           }}
         >
           <React.Suspense>
-            <UserProfile Profile={Profile} Roles={Roles} />
+            <UserProfile
+              Profile={Profile}
+              Roles={Roles}
+              ProfileHandler={ProfileHandler}
+            />
           </React.Suspense>
         </Modal>
         <TableButtonBar OnAdd={() => {}} OnDelete={() => {}} />
