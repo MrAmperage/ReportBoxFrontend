@@ -144,7 +144,9 @@ const CRUDComponent = inject('GlobalStore')(
     };
     const EventListener = () => {
       document.addEventListener('keydown', ClearSearch, false);
-      return document.removeEventListener('keydown', ClearSearch, false);
+      return () => {
+        document.removeEventListener('keydown', ClearSearch, false);
+      };
     };
     useEffect(() => {
       EventListener();

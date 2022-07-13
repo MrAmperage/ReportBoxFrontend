@@ -1,8 +1,9 @@
-import { message, Modal, Table } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { Input, message, Modal, Table } from 'antd';
 import { inject, observer } from 'mobx-react';
 import Moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { ApiFetch } from '../Helpers/Helpers';
+import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
 const UserProfile = React.lazy(() => import('../Components/UserProfile'));
@@ -13,6 +14,8 @@ const UsersReference = inject('GlobalStore')(
     const [ShowModal, SetNewShowModal] = useState(false);
     const [Profile, SetNewProfile] = useState(null);
     const [Roles, SetNewRoles] = useState([]);
+    const [SearchString, SetNewSearchString] = useState(null);
+    const SearchRef = React.createRef();
     const RequestData = () => {
       return ApiFetch(
         `api/${props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey}`,
@@ -88,6 +91,17 @@ const UsersReference = inject('GlobalStore')(
       NewProfile[Feeld] = Value;
       SetNewProfile(NewProfile);
     };
+    const ClearSearch = (Event) => {
+      if (Event.key == 'Escape') {
+        SetNewSearchString(null);
+      }
+    };
+    const EventListener = () => {
+      document.addEventListener('keydown', ClearSearch, false);
+      return () => {
+        document.removeEventListener('keydown', ClearSearch, false);
+      };
+    };
     const RequestProfile = (Id) => {
       let PromiseArray = [];
       PromiseArray.push(
@@ -109,6 +123,7 @@ const UsersReference = inject('GlobalStore')(
     };
     useEffect(() => {
       RequestData();
+      EventListener();
     }, [props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey]);
     return (
       <>
@@ -173,6 +188,29 @@ const UsersReference = inject('GlobalStore')(
           }}
           columns={[
             {
+              onFilter: (Value, Record) => {
+                if (SearchString != null) {
+                  return Record[Value].toString()
+                    .toLowerCase()
+                    .includes(SearchString);
+                } else {
+                  return true;
+                }
+              },
+              filteredValue: ['Username'],
+              filterDropdown: () => (
+                <Input
+                  placeholder="Поиск"
+                  size="small"
+                  ref={SearchRef}
+                  onPressEnter={(Event) => {
+                    SetNewSearchString(SearchRef.current.input.value);
+                  }}
+                />
+              ),
+              filterIcon: <SearchOutlined />,
+              defaultSortOrder: 'ascend',
+              sorter: TableSorter('Username'),
               title: 'Имя пользователя',
               dataIndex: 'Username',
               key: 'Username',
