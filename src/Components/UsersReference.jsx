@@ -60,6 +60,29 @@ const UsersReference = inject('GlobalStore')(
         SetNewShowModal(true);
       });
     };
+    const ShowDeleteModal = () => {
+      if (SelectedKey != null) {
+        Modal.confirm({
+          title: 'Подтвердите действие',
+          content: 'Вы действительно хотите удалить объект?',
+          okButtonProps: { size: 'small', type: 'primary', danger: true },
+          okText: 'Удалить',
+          okCancel: 'Отмена',
+          cancelButtonProps: {
+            size: 'small',
+          },
+          onOk: () => {
+            DeleteUser();
+          },
+        });
+      }
+    };
+    const DeleteUser = () => {
+      ApiFetch(`api/Users/${SelectedKey}`, 'DELETE', undefined, (Response) => {
+        SetNewSelectedKey(null);
+        RequestData();
+      });
+    };
     const ProfileHandler = (Feeld, Value) => {
       let NewProfile = { ...Profile };
       NewProfile[Feeld] = Value;
@@ -118,7 +141,9 @@ const UsersReference = inject('GlobalStore')(
           OnAdd={() => {
             AddUser();
           }}
-          OnDelete={() => {}}
+          OnDelete={() => {
+            ShowDeleteModal();
+          }}
         />
         <Table
           scroll={{ y: 700 }}
