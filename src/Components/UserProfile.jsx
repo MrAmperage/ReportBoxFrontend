@@ -1,4 +1,4 @@
-import { Button, Checkbox, DatePicker, Input, Select } from 'antd';
+import { Button, Checkbox, DatePicker, Input, message, Select } from 'antd';
 import { inject, observer } from 'mobx-react';
 import Bcrypt from 'bcryptjs';
 import React, { useState } from 'react';
@@ -16,7 +16,11 @@ const UserProfile = inject('GlobalStore')(
   observer((props) => {
     const [ShowPasswordInput, SetNewShowPasswordInput] = useState(false);
     const SavePassword = (Password) => {
-      return Bcrypt.hash(Password, 12);
+      if (Password.length > 0) {
+        return Bcrypt.hash(Password, 12);
+      } else {
+        return Promise.reject('Пароль не может быть пустым');
+      }
     };
     return (
       <ProfileWrapper GridRowsTemplate="1fr 1fr 1fr 1fr 1fr 1fr">
@@ -54,12 +58,14 @@ const UserProfile = inject('GlobalStore')(
                 <RowStyle width="140px" justifyContent="space-evenly">
                   <Button
                     onClick={() => {
-                      SavePassword(props.Profile.NotHashedPassword).then(
-                        (Password) => {
+                      SavePassword(props.Profile.NotHashedPassword)
+                        .then((Password) => {
                           props.ProfileHandler('Password', Password);
                           SetNewShowPasswordInput(false);
-                        }
-                      );
+                        })
+                        .catch((Error) => {
+                          message.warning(Error);
+                        });
                     }}
                     icon={<CheckOutlined />}
                     size="small"
