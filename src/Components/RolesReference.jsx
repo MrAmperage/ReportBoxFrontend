@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import TableButtonBar from './TableButtonBar';
-import { Input, Table } from 'antd';
+import { Input, Modal, Table } from 'antd';
 import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import { SearchOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ const RolesReference = inject('GlobalStore')(
     const [RolesTable, SetNewRolesTable] = useState([]);
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [SearchString, SetNewSearchString] = useState(null);
+    const [ShowModal, SetNewShowModal] = useState(false);
     const SearchRef = React.createRef();
     const EventListener = () => {
       document.addEventListener('keydown', ClearSearch, false);
@@ -34,6 +35,21 @@ const RolesReference = inject('GlobalStore')(
     }, [props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey]);
     return (
       <>
+        <Modal
+          title="Профиль роли"
+          width="450px"
+          closable={false}
+          maskClosable={false}
+          okButtonProps={{ size: 'small' }}
+          cancelButtonProps={{ size: 'small' }}
+          okText="Сохранить"
+          cancelText="Отмена"
+          visible={ShowModal}
+          onCancel={() => {
+            SetNewShowModal(false);
+          }}
+          onOk={() => {}}
+        ></Modal>
         <TableButtonBar />
         <Table
           scroll={{ y: 700 }}
@@ -84,7 +100,9 @@ const RolesReference = inject('GlobalStore')(
               onClick: () => {
                 SetNewSelectedKey(Record.Id);
               },
-              onDoubleClick: () => {},
+              onDoubleClick: () => {
+                SetNewShowModal(true);
+              },
             };
           }}
           dataSource={RolesTable}

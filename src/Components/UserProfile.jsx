@@ -6,7 +6,6 @@ import { GlobalInputStyle } from '../Styles/GlobalStyle';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import {
   ProfileRowElement,
-  ProfileSelectStyle,
   ProfileWrapper,
   RowProfileWrapper,
 } from '../Styles/ProfileStyles';
