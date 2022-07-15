@@ -1,21 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import TableButtonBar from './TableButtonBar';
-import { Table } from 'antd';
-import { ApiFetch } from '../Helpers/Helpers';
+import { Input, Table } from 'antd';
+import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
+import { SearchOutlined } from '@ant-design/icons';
 
 const RolesReference = inject('GlobalStore')(
   observer((props) => {
     const [RolesTable, SetNewRolesTable] = useState([]);
     const [SelectedKey, SetNewSelectedKey] = useState(null);
+    const [SearchString, SetNewSearchString] = useState(null);
+    const SearchRef = React.createRef();
+    const EventListener = () => {
+      document.addEventListener('keydown', ClearSearch, false);
+      return () => {
+        document.removeEventListener('keydown', ClearSearch, false);
+      };
+    };
     const RequestData = () => {
       ApiFetch('api/Roles', 'GET', undefined, (Response) => {
         SetNewRolesTable(Response.Data);
       });
     };
+    const ClearSearch = (Event) => {
+      if (Event.key == 'Escape') {
+        SetNewSearchString(null);
+      }
+    };
     useEffect(() => {
       RequestData();
+      EventListener();
     }, [props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey]);
     return (
       <>
@@ -26,6 +41,29 @@ const RolesReference = inject('GlobalStore')(
           rowKey="Id"
           columns={[
             {
+              onFilter: (Value, Record) => {
+                if (SearchString != null) {
+                  return Record[Value].toString()
+                    .toLowerCase()
+                    .includes(SearchString);
+                } else {
+                  return true;
+                }
+              },
+              filteredValue: ['Rolename'],
+              filterDropdown: () => (
+                <Input
+                  placeholder="Поиск"
+                  size="small"
+                  ref={SearchRef}
+                  onPressEnter={(Event) => {
+                    SetNewSearchString(SearchRef.current.input.value);
+                  }}
+                />
+              ),
+              defaultSortOrder: 'ascend',
+              sorter: TableSorter('Rolename'),
+              filterIcon: <SearchOutlined />,
               title: 'Наименование',
               dataIndex: 'Rolename',
               render: (Value, Record, Index) => {
