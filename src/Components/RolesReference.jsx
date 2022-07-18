@@ -52,6 +52,11 @@ const RolesReference = inject('GlobalStore')(
         SetNewSearchString(null);
       }
     };
+    const ProfileHandler = (Feeld, Value) => {
+      let NewProfile = { ...Profile };
+      NewProfile[Feeld] = Value;
+      SetNewProfile(NewProfile);
+    };
     useEffect(() => {
       RequestData();
       EventListener();
@@ -73,7 +78,11 @@ const RolesReference = inject('GlobalStore')(
           }}
           onOk={() => {}}
         >
-          <RoleProfile Profile={Profile} UserMenu={UserMenu} />
+          <RoleProfile
+            Profile={Profile}
+            UserMenu={UserMenu}
+            ProfileHandler={ProfileHandler}
+          />
         </Modal>
         <TableButtonBar />
         <Table

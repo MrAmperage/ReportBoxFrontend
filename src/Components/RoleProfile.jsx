@@ -18,7 +18,9 @@ const UserProfile = inject('GlobalStore')(
             <ProfileRowElement>
               <GlobalInputStyle>
                 <Input
-                  onChange={(Event) => {}}
+                  onChange={(Event) => {
+                    props.ProfileHandler('Rolename', Event.target.value);
+                  }}
                   size="small"
                   width="190px"
                   value={props.Profile.Rolename}
@@ -32,8 +34,9 @@ const UserProfile = inject('GlobalStore')(
             <Tree
               fieldNames={{ title: 'Caption', key: 'Id', children: 'LeftMenu' }}
               onCheck={(Checked) => {
-                console.log(Checked);
+                props.ProfileHandler('MenusAccess', Checked);
               }}
+              checkedKeys={props.Profile.MenusAccess}
               treeData={props.UserMenu}
               checkable={true}
               selectable={false}
