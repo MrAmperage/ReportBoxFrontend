@@ -23,7 +23,7 @@ const RolesReference = inject('GlobalStore')(
       };
     };
     const RequestData = () => {
-      ApiFetch('api/Roles', 'GET', undefined, (Response) => {
+      return ApiFetch('api/Roles', 'GET', undefined, (Response) => {
         SetNewRolesTable(Response.Data);
       });
     };
@@ -52,6 +52,14 @@ const RolesReference = inject('GlobalStore')(
         SetNewSearchString(null);
       }
     };
+    const SaveProfile = () => {
+      return ApiFetch(
+        `api/Roles${'Id' in Profile ? `/${Profile.Id}` : ''}`,
+        `${'Id' in Profile ? 'PATCH' : 'POST'}`,
+        Profile,
+        () => {}
+      );
+    };
     const ProfileHandler = (Feeld, Value) => {
       let NewProfile = { ...Profile };
       NewProfile[Feeld] = Value;
@@ -76,7 +84,13 @@ const RolesReference = inject('GlobalStore')(
           onCancel={() => {
             SetNewShowModal(false);
           }}
-          onOk={() => {}}
+          onOk={() => {
+            SaveProfile().then(() => {
+              RequestData().then(() => {
+                SetNewShowModal(false);
+              });
+            });
+          }}
         >
           <RoleProfile
             Profile={Profile}

@@ -96,6 +96,7 @@ const UsersReference = inject('GlobalStore')(
         SetNewSearchString(null);
       }
     };
+
     const EventListener = () => {
       document.addEventListener('keydown', ClearSearch, false);
       return () => {
@@ -124,7 +125,7 @@ const UsersReference = inject('GlobalStore')(
     useEffect(() => {
       RequestData();
       EventListener();
-    }, [props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey]);
+    }, []);
     return (
       <>
         <Modal

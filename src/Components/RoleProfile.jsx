@@ -44,7 +44,7 @@ const UserProfile = inject('GlobalStore')(
           </Panel>
         </Collapse>
         <Collapse>
-          <Panel header="Группы">
+          <Panel header="Организации и участки">
             <Tree />
           </Panel>
         </Collapse>
