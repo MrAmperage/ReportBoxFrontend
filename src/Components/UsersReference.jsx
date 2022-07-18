@@ -131,6 +131,7 @@ const UsersReference = inject('GlobalStore')(
         <Modal
           title="Профиль пользователя"
           width="450px"
+          destroyOnClose={true}
           closable={false}
           maskClosable={false}
           okButtonProps={{ size: 'small' }}

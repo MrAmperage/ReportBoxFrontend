@@ -22,6 +22,42 @@ const RolesReference = inject('GlobalStore')(
         document.removeEventListener('keydown', ClearSearch, false);
       };
     };
+    const ShowDeleteModal = () => {
+      if (SelectedKey != null) {
+        Modal.confirm({
+          title: 'Подтвердите действие',
+          content: 'Вы действительно хотите удалить объект?',
+          okButtonProps: { size: 'small', type: 'primary', danger: true },
+          okText: 'Удалить',
+          cancelText: 'Отмена',
+          cancelButtonProps: {
+            size: 'small',
+          },
+          onOk: () => {
+            DeleteRole().then(() => {
+              SetNewSelectedKey(null);
+              RequestData();
+            });
+          },
+        });
+      }
+    };
+    const AddRole = () => {
+      ApiFetch(
+        'api/configuration/GetApplicationMenu',
+        'GET',
+        undefined,
+        (Response) => {
+          SetNewUserMenu(Response.Data);
+          SetNewProfile({
+            Rolename: '',
+            MenusAccess: [],
+            OrganizationsAccess: [],
+          });
+          SetNewShowModal(true);
+        }
+      );
+    };
     const RequestData = () => {
       return ApiFetch('api/Roles', 'GET', undefined, (Response) => {
         SetNewRolesTable(Response.Data);
@@ -60,6 +96,14 @@ const RolesReference = inject('GlobalStore')(
         () => {}
       );
     };
+    const DeleteRole = () => {
+      return ApiFetch(
+        `api/Roles/${SelectedKey}`,
+        'DELETE',
+        undefined,
+        (Response) => {}
+      );
+    };
     const ProfileHandler = (Feeld, Value) => {
       let NewProfile = { ...Profile };
       NewProfile[Feeld] = Value;
@@ -68,10 +112,11 @@ const RolesReference = inject('GlobalStore')(
     useEffect(() => {
       RequestData();
       EventListener();
-    }, [props.GlobalStore.GetCurrentTab.GetCurrentMenuElementKey]);
+    }, []);
     return (
       <>
         <Modal
+          destroyOnClose={true}
           title="Профиль роли"
           width="450px"
           closable={false}
@@ -98,7 +143,14 @@ const RolesReference = inject('GlobalStore')(
             ProfileHandler={ProfileHandler}
           />
         </Modal>
-        <TableButtonBar />
+        <TableButtonBar
+          OnAdd={() => {
+            AddRole();
+          }}
+          OnDelete={() => {
+            ShowDeleteModal();
+          }}
+        />
         <Table
           scroll={{ y: 700 }}
           pagination={false}
