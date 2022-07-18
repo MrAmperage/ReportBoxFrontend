@@ -72,3 +72,22 @@ export function TableSorter(Feeld) {
     }
   };
 }
+
+export function GenerateAntDTree(GenerateOptions, Data) {
+  return Data.map((DataObject) => {
+    let NewTreeObject = {
+      title: DataObject[GenerateOptions.title],
+      key: DataObject[GenerateOptions.key],
+    };
+    if (
+      'children' in GenerateOptions &&
+      GenerateOptions.children in DataObject
+    ) {
+      NewTreeObject.children = GenerateAntDTree(
+        GenerateOptions,
+        DataObject[GenerateOptions.children]
+      );
+    }
+    return NewTreeObject;
+  });
+}

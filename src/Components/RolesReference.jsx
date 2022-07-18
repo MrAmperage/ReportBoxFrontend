@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import TableButtonBar from './TableButtonBar';
 import { Input, Modal, Table } from 'antd';
-import { ApiFetch, TableSorter } from '../Helpers/Helpers';
+import { ApiFetch, GenerateAntDTree, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import { SearchOutlined } from '@ant-design/icons';
+import RoleProfile from '../Components/RoleProfile';
 
 const RolesReference = inject('GlobalStore')(
   observer((props) => {
     const [RolesTable, SetNewRolesTable] = useState([]);
+    const [Profile, SetNewProfile] = useState(null);
     const [SelectedKey, SetNewSelectedKey] = useState(null);
     const [SearchString, SetNewSearchString] = useState(null);
     const [ShowModal, SetNewShowModal] = useState(false);
+    const [UserMenu, SetNewUserMenu] = useState([]);
     const SearchRef = React.createRef();
     const EventListener = () => {
       document.addEventListener('keydown', ClearSearch, false);
@@ -23,6 +26,35 @@ const RolesReference = inject('GlobalStore')(
       ApiFetch('api/Roles', 'GET', undefined, (Response) => {
         SetNewRolesTable(Response.Data);
       });
+    };
+
+    const RequestProfile = () => {
+      let PromiseArray = [];
+      PromiseArray.push(
+        ApiFetch(`api/Roles/${SelectedKey}`, 'GET', undefined, (Response) => {
+          SetNewProfile(Response.Data);
+        })
+      );
+      PromiseArray.push(
+        ApiFetch(
+          'api/configuration/GetApplicationMenu',
+          'GET',
+          undefined,
+          (Response) => {
+            SetNewUserMenu(
+              GenerateAntDTree(
+                {
+                  title: 'Caption',
+                  key: 'Id',
+                  children: 'LeftMenu',
+                },
+                Response.Data
+              )
+            );
+          }
+        )
+      );
+      return Promise.all(PromiseArray);
     };
     const ClearSearch = (Event) => {
       if (Event.key == 'Escape') {
@@ -49,7 +81,9 @@ const RolesReference = inject('GlobalStore')(
             SetNewShowModal(false);
           }}
           onOk={() => {}}
-        ></Modal>
+        >
+          <RoleProfile Profile={Profile} UserMenu={UserMenu} />
+        </Modal>
         <TableButtonBar />
         <Table
           scroll={{ y: 700 }}
@@ -101,7 +135,9 @@ const RolesReference = inject('GlobalStore')(
                 SetNewSelectedKey(Record.Id);
               },
               onDoubleClick: () => {
-                SetNewShowModal(true);
+                RequestProfile().then(() => {
+                  SetNewShowModal(true);
+                });
               },
             };
           }}
