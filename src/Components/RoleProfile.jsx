@@ -30,6 +30,10 @@ const UserProfile = inject('GlobalStore')(
         <Collapse>
           <Panel header="Меню пользователя">
             <Tree
+              fieldNames={{ title: 'Caption', key: 'Id', children: 'LeftMenu' }}
+              onCheck={(Checked) => {
+                console.log(Checked);
+              }}
               treeData={props.UserMenu}
               checkable={true}
               selectable={false}

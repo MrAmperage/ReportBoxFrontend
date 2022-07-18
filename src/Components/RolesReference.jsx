@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { inject, observer } from 'mobx-react';
 import TableButtonBar from './TableButtonBar';
 import { Input, Modal, Table } from 'antd';
-import { ApiFetch, GenerateAntDTree, TableSorter } from '../Helpers/Helpers';
+import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import { SearchOutlined } from '@ant-design/icons';
 import RoleProfile from '../Components/RoleProfile';
@@ -41,16 +41,7 @@ const RolesReference = inject('GlobalStore')(
           'GET',
           undefined,
           (Response) => {
-            SetNewUserMenu(
-              GenerateAntDTree(
-                {
-                  title: 'Caption',
-                  key: 'Id',
-                  children: 'LeftMenu',
-                },
-                Response.Data
-              )
-            );
+            SetNewUserMenu(Response.Data);
           }
         )
       );
