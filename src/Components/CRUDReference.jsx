@@ -11,7 +11,7 @@ import {
 import { SearchOutlined } from '@ant-design/icons';
 import TableButtonBar from './TableButtonBar';
 
-const CRUDComponent = inject('GlobalStore')(
+const CRUDReference = inject('GlobalStore')(
   observer((props) => {
     const [ObjectTable, SetNewObjectTable] = useState([]);
     const [SelectedKey, SetNewSelectedKey] = useState(null);
@@ -210,7 +210,9 @@ const CRUDComponent = inject('GlobalStore')(
                   size="small"
                   ref={SearchRef}
                   onPressEnter={(Event) => {
-                    SetNewSearchString(SearchRef.current.input.value);
+                    SetNewSearchString(
+                      SearchRef.current.input.value.toLowerCase()
+                    );
                   }}
                 />
               ),
@@ -252,4 +254,4 @@ const CRUDComponent = inject('GlobalStore')(
   })
 );
 
-export default CRUDComponent;
+export default CRUDReference;

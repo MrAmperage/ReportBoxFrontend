@@ -12,7 +12,7 @@ export default class SettingTab extends BaseTab {
       switch (MenuElement.key) {
         case 'UnitTypes':
           MenuElement.component = React.lazy(() =>
-            import('../Components/CRUDComponent')
+            import('../Components/CRUDReference')
           );
           break;
         case 'Users':
@@ -22,22 +22,22 @@ export default class SettingTab extends BaseTab {
           break;
         case 'Manufacturers':
           MenuElement.component = React.lazy(() =>
-            import('../Components/CRUDComponent')
+            import('../Components/CRUDReference')
           );
           break;
         case 'TransportTypes':
           MenuElement.component = React.lazy(() =>
-            import('../Components/CRUDComponent')
+            import('../Components/CRUDReference')
           );
           break;
         case 'UnitStates':
           MenuElement.component = React.lazy(() =>
-            import('../Components/CRUDComponent')
+            import('../Components/CRUDReference')
           );
           break;
         case 'CargoTypes':
           MenuElement.component = React.lazy(() =>
-            import('../Components/CRUDComponent')
+            import('../Components/CRUDReference')
           );
           break;
         case 'Roles':

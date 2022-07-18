@@ -173,7 +173,9 @@ const RolesReference = inject('GlobalStore')(
                   size="small"
                   ref={SearchRef}
                   onPressEnter={(Event) => {
-                    SetNewSearchString(SearchRef.current.input.value);
+                    SetNewSearchString(
+                      SearchRef.current.input.value.toLowerCase()
+                    );
                   }}
                 />
               ),
