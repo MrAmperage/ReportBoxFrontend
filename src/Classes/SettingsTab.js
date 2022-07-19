@@ -50,6 +50,11 @@ export default class SettingTab extends BaseTab {
             import('../Components/RolesReference')
           );
           break;
+        case 'Organizations':
+          MenuElement.component = React.lazy(() =>
+            import('../Components/OrganizationsReference')
+          );
+          break;
       }
 
       return MenuElement;
