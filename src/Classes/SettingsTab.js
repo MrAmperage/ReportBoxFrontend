@@ -10,6 +10,11 @@ export default class SettingTab extends BaseTab {
   SetComponents() {
     return this.Menu.map((MenuElement) => {
       switch (MenuElement.key) {
+        default:
+          MenuElement.component = React.lazy(() =>
+            import('../Components/ComponentNotFound')
+          );
+          break;
         case 'UnitTypes':
           MenuElement.component = React.lazy(() =>
             import('../Components/CRUDReference')
