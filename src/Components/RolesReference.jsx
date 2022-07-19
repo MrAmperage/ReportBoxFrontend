@@ -4,8 +4,7 @@ import { Input, Modal, Table } from 'antd';
 import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import { SearchOutlined } from '@ant-design/icons';
-import RoleProfile from '../Components/RoleProfile';
-
+const RoleProfile = React.lazy(() => import('../Components/RoleProfile'));
 export default function RolesReference(props) {
   const [RolesTable, SetNewRolesTable] = useState([]);
   const [Profile, SetNewProfile] = useState(null);
@@ -135,11 +134,13 @@ export default function RolesReference(props) {
           });
         }}
       >
-        <RoleProfile
-          Profile={Profile}
-          UserMenu={UserMenu}
-          ProfileHandler={ProfileHandler}
-        />
+        <React.Suspense>
+          <RoleProfile
+            Profile={Profile}
+            UserMenu={UserMenu}
+            ProfileHandler={ProfileHandler}
+          />
+        </React.Suspense>
       </Modal>
       <TableButtonBar
         OnAdd={() => {
