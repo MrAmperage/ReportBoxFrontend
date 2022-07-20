@@ -6,7 +6,3 @@ export const GlobalStyle = createGlobalStyle`html,body,#App,.FullExtend{
   box-sizing: border-box;
   width: 100%;
   }`;
-
-export const GlobalInputStyle = styled.div`
-  width: 190;
-`;

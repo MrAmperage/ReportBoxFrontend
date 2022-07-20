@@ -1,5 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Modal, Table } from 'antd';
+import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
@@ -36,9 +37,23 @@ export default function Organizations() {
       'GET',
       undefined,
       (Response) => {
+        Response.Data.Areas.map((Area) => {
+          Area.Edited = false;
+          Area.Key = nanoid();
+          return Area;
+        });
         SetNewProfile(Response.Data);
       }
     );
+  };
+  const AreasHandler = (Action, Index, Value) => {
+    let NewProfile = { ...Profile };
+    switch (Action) {
+      case 'Edit':
+        NewProfile.Areas[Index].Edited = Value;
+        break;
+    }
+    SetNewProfile(NewProfile);
   };
   const ProfileHandler = (Feeld, Value) => {
     let NewProfile = { ...Profile };
@@ -70,6 +85,7 @@ export default function Organizations() {
           <OrganizationProfile
             Profile={Profile}
             ProfileHandler={ProfileHandler}
+            AreasHandler={AreasHandler}
           />
         </React.Suspense>
       </Modal>

@@ -1,28 +1,33 @@
-import { Checkbox, Input, Table } from 'antd';
-import React from 'react';
-import { GlobalInputStyle } from '../Styles/GlobalStyle';
+import { Button, Checkbox, Input, Table } from 'antd';
+import React, { useState } from 'react';
+
 import {
   ProfileRowElement,
   ProfileWrapper,
   RowProfileWrapper,
 } from '../Styles/ProfileStyles';
+import {
+  RowInputStyle,
+  RowStyle,
+  RowTablePointerStyle,
+} from '../Styles/TableStyles';
+import TableButtonBar from './TableButtonBar';
 
 export default function OrganizationProfile(props) {
+  const [SelectedKey, SetNewSelectedKey] = useState(null);
   return (
     <>
       <ProfileWrapper GridRowsTemplate="1fr 1fr">
         <RowProfileWrapper>
           <ProfileRowElement>Наименование:</ProfileRowElement>
           <ProfileRowElement>
-            <GlobalInputStyle>
-              <Input
-                size="small"
-                value={props.Profile.Caption}
-                onChange={(Event) => {
-                  props.ProfileHandler('Caption', Event.target.value);
-                }}
-              />
-            </GlobalInputStyle>
+            <Input
+              size="small"
+              value={props.Profile.Caption}
+              onChange={(Event) => {
+                props.ProfileHandler('Caption', Event.target.value);
+              }}
+            />
           </ProfileRowElement>
         </RowProfileWrapper>
         <RowProfileWrapper>
@@ -37,7 +42,57 @@ export default function OrganizationProfile(props) {
           </ProfileRowElement>
         </RowProfileWrapper>
       </ProfileWrapper>
-      <Table columns={[{ title: 'Участок' }]} size="small" />
+      <TableButtonBar />
+      <Table
+        scroll={{ y: 400 }}
+        rowSelection={{
+          columnWidth: 0,
+          selectedRowKeys: [SelectedKey],
+          hideSelectAll: true,
+          renderCell: () => {
+            return null;
+          },
+        }}
+        onRow={(Record, Index) => {
+          return {
+            onClick: () => {
+              SetNewSelectedKey(Record.Key);
+            },
+            onDoubleClick: () => {
+              props.AreasHandler('Edit', Index, true);
+            },
+          };
+        }}
+        rowKey="Key"
+        pagination={false}
+        columns={[
+          {
+            title: 'Участок',
+            dataIndex: 'Caption',
+            key: 'Caption',
+            render: (Value, Record, Index) =>
+              Record.Edited ? (
+                <RowStyle width="350px" justifyContent="space-between">
+                  <RowInputStyle>
+                    <Input size="small" defaultValue={Value} />
+                  </RowInputStyle>
+                  <RowStyle width="160px" justifyContent="space-between">
+                    <Button size="small" type="primary" onClick={() => {}}>
+                      Сохранить
+                    </Button>
+                    <Button size="small" onClick={(Event) => {}}>
+                      Отмена
+                    </Button>
+                  </RowStyle>
+                </RowStyle>
+              ) : (
+                <RowTablePointerStyle>{Value}</RowTablePointerStyle>
+              ),
+          },
+        ]}
+        size="small"
+        dataSource={props.Profile.Areas}
+      />
     </>
   );
 }

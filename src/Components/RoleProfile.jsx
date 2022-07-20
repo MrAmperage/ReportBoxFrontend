@@ -5,7 +5,7 @@ import {
   ProfileWrapper,
   RowProfileWrapper,
 } from '../Styles/ProfileStyles';
-import { GlobalInputStyle } from '../Styles/GlobalStyle';
+
 import { Collapse, Input, Tree } from 'antd';
 const { Panel } = Collapse;
 const UserProfile = inject('GlobalStore')(
@@ -16,16 +16,14 @@ const UserProfile = inject('GlobalStore')(
           <RowProfileWrapper>
             <ProfileRowElement>Роль:</ProfileRowElement>
             <ProfileRowElement>
-              <GlobalInputStyle>
-                <Input
-                  onChange={(Event) => {
-                    props.ProfileHandler('Rolename', Event.target.value);
-                  }}
-                  size="small"
-                  width="190px"
-                  value={props.Profile.Rolename}
-                />
-              </GlobalInputStyle>
+              <Input
+                onChange={(Event) => {
+                  props.ProfileHandler('Rolename', Event.target.value);
+                }}
+                size="small"
+                width="190px"
+                value={props.Profile.Rolename}
+              />
             </ProfileRowElement>
           </RowProfileWrapper>
         </ProfileWrapper>

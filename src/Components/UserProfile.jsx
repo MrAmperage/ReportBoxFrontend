@@ -2,7 +2,7 @@ import { Button, Checkbox, DatePicker, Input, message, Select } from 'antd';
 import { inject, observer } from 'mobx-react';
 import Bcrypt from 'bcryptjs';
 import React, { useState } from 'react';
-import { GlobalInputStyle } from '../Styles/GlobalStyle';
+
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import {
   ProfileRowElement,
@@ -26,16 +26,14 @@ const UserProfile = inject('GlobalStore')(
         <RowProfileWrapper>
           <ProfileRowElement>Имя пользователя:</ProfileRowElement>
           <ProfileRowElement>
-            <GlobalInputStyle>
-              <Input
-                onChange={(Event) => {
-                  props.ProfileHandler('Username', Event.target.value);
-                }}
-                size="small"
-                width="190px"
-                value={props.Profile.Username}
-              />
-            </GlobalInputStyle>
+            <Input
+              onChange={(Event) => {
+                props.ProfileHandler('Username', Event.target.value);
+              }}
+              size="small"
+              width="190px"
+              value={props.Profile.Username}
+            />
           </ProfileRowElement>
         </RowProfileWrapper>
         <RowProfileWrapper>
