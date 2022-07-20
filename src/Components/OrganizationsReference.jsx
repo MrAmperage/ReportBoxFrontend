@@ -52,6 +52,9 @@ export default function Organizations() {
       case 'Edit':
         NewProfile.Areas[Index].Edited = Value;
         break;
+      case 'Caption':
+        NewProfile.Areas[Index].Caption = Value;
+        break;
     }
     SetNewProfile(NewProfile);
   };

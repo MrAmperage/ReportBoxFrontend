@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, Table } from 'antd';
+import { Button, Checkbox, Input, Modal, Table } from 'antd';
 import React, { useState } from 'react';
 
 import {
@@ -15,6 +15,18 @@ import TableButtonBar from './TableButtonBar';
 
 export default function OrganizationProfile(props) {
   const [SelectedKey, SetNewSelectedKey] = useState(null);
+  const ShowDeleteModal = () => {
+    if (SelectedKey != null) {
+      Modal.confirm({
+        title: 'Подтвердите действие',
+        content: 'Вы действительно хотите удалить объект?',
+        okButtonProps: { size: 'small', danger: true, type: 'primary' },
+        cancelButtonProps: { size: 'small' },
+        okText: 'Удалить',
+        cancelText: 'Отмена',
+      });
+    }
+  };
   return (
     <>
       <ProfileWrapper GridRowsTemplate="1fr 1fr">
@@ -42,7 +54,11 @@ export default function OrganizationProfile(props) {
           </ProfileRowElement>
         </RowProfileWrapper>
       </ProfileWrapper>
-      <TableButtonBar />
+      <TableButtonBar
+        OnDelete={() => {
+          ShowDeleteModal();
+        }}
+      />
       <Table
         scroll={{ y: 400 }}
         rowSelection={{
@@ -74,13 +90,28 @@ export default function OrganizationProfile(props) {
               Record.Edited ? (
                 <RowStyle width="350px" justifyContent="space-between">
                   <RowInputStyle>
-                    <Input size="small" defaultValue={Value} />
+                    <Input
+                      size="small"
+                      value={Value}
+                      onChange={(Event) => {
+                        props.AreasHandler(
+                          'Caption',
+                          Index,
+                          Event.target.value
+                        );
+                      }}
+                    />
                   </RowInputStyle>
                   <RowStyle width="160px" justifyContent="space-between">
                     <Button size="small" type="primary" onClick={() => {}}>
                       Сохранить
                     </Button>
-                    <Button size="small" onClick={(Event) => {}}>
+                    <Button
+                      size="small"
+                      onClick={(Event) => {
+                        props.AreasHandler('Edit', Index, false);
+                      }}
+                    >
                       Отмена
                     </Button>
                   </RowStyle>
