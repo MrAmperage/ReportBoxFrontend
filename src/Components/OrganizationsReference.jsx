@@ -37,27 +37,11 @@ export default function Organizations() {
       'GET',
       undefined,
       (Response) => {
-        Response.Data.Areas.map((Area) => {
-          Area.Edited = false;
-          Area.Key = nanoid();
-          return Area;
-        });
         SetNewProfile(Response.Data);
       }
     );
   };
-  const AreasHandler = (Action, Index, Value) => {
-    let NewProfile = { ...Profile };
-    switch (Action) {
-      case 'Edit':
-        NewProfile.Areas[Index].Edited = Value;
-        break;
-      case 'Caption':
-        NewProfile.Areas[Index].Caption = Value;
-        break;
-    }
-    SetNewProfile(NewProfile);
-  };
+
   const ProfileHandler = (Feeld, Value) => {
     let NewProfile = { ...Profile };
     NewProfile[Feeld] = Value;
@@ -88,7 +72,6 @@ export default function Organizations() {
           <OrganizationProfile
             Profile={Profile}
             ProfileHandler={ProfileHandler}
-            AreasHandler={AreasHandler}
           />
         </React.Suspense>
       </Modal>
