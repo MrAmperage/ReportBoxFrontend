@@ -118,20 +118,19 @@ export default function Organizations() {
             key: 'Internal',
             render: (Value, Record, Index) => {
               return (
-                <RowStyle width="250px" justifyContent="space-between">
-                  <RowInputStyle>
-                    <Checkbox
-                      checked={Value}
-                      onChange={(Event) => {
-                        OrganizationHandler(Index, [
-                          ['Internal', Event.target.checked],
-                          ['InternalEdit', true],
-                        ]);
-                      }}
-                    />
-                  </RowInputStyle>
+                <RowStyle width="200px" justifyContent="space-between">
+                  <Checkbox
+                    checked={Value}
+                    onChange={(Event) => {
+                      OrganizationHandler(Index, [
+                        ['Internal', Event.target.checked],
+                        ['InternalEdit', true],
+                      ]);
+                    }}
+                  />
+
                   {Record.InternalEdit || Record.CaptionEdit ? (
-                    <RowStyle width="350px" justifyContent="space-between">
+                    <RowStyle width="160px" justifyContent="space-between">
                       <Button size="small" type="primary" onClick={() => {}}>
                         Сохранить
                       </Button>
