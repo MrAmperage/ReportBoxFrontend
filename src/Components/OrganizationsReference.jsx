@@ -1,18 +1,18 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Input, Modal, Table } from 'antd';
+import { Button, Checkbox, Input, Table } from 'antd';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch } from '../Helpers/Helpers';
-import { RowTablePointerStyle } from '../Styles/TableStyles';
+import {
+  RowInputStyle,
+  RowStyle,
+  RowTablePointerStyle,
+} from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
-const OrganizationProfile = React.lazy(() =>
-  import('../Components/OrganizattionProfile')
-);
+
 export default function Organizations() {
   const [OrganizationsTable, SetNewOrganizationsTable] = useState([]);
   const [SelectedKey, SetNewSelectedKey] = useState(null);
-  const [ShowModal, SetNewShowModal] = useState(false);
-  const [Profile, SetNewProfile] = useState(null);
   const [SearchString, SetNewSearchString] = useState(null);
   const SearchRef = React.createRef();
   const ClearSearch = (Event) => {
@@ -28,24 +28,23 @@ export default function Organizations() {
   };
   const RequestData = () => {
     ApiFetch('api/Organizations', 'GET', undefined, (Response) => {
-      SetNewOrganizationsTable(Response.Data);
+      SetNewOrganizationsTable(
+        Response.Data.map((Organization) => {
+          Organization.CaptionEdit = false;
+          Organization.InternalEdit = false;
+          Organization.Key = nanoid();
+          return Organization;
+        })
+      );
     });
   };
-  const RequestProfile = () => {
-    return ApiFetch(
-      `api/Organizations/${SelectedKey}`,
-      'GET',
-      undefined,
-      (Response) => {
-        SetNewProfile(Response.Data);
-      }
-    );
-  };
+  const OrganizationHandler = (Index, FeeldArrays) => {
+    let NewOrganizationsTable = [...OrganizationsTable];
+    FeeldArrays.forEach((FeeldArray) => {
+      NewOrganizationsTable[Index][FeeldArray[0]] = FeeldArray[1];
+    });
 
-  const ProfileHandler = (Feeld, Value) => {
-    let NewProfile = { ...Profile };
-    NewProfile[Feeld] = Value;
-    SetNewProfile(NewProfile);
+    SetNewOrganizationsTable(NewOrganizationsTable);
   };
   useEffect(() => {
     RequestData();
@@ -53,33 +52,11 @@ export default function Organizations() {
   }, []);
   return (
     <>
-      <Modal
-        destroyOnClose={true}
-        title="Профиль организации"
-        width="450px"
-        closable={false}
-        maskClosable={false}
-        okButtonProps={{ size: 'small' }}
-        cancelButtonProps={{ size: 'small' }}
-        okText="Сохранить"
-        cancelText="Отмена"
-        visible={ShowModal}
-        onCancel={() => {
-          SetNewShowModal(false);
-        }}
-      >
-        <React.Suspense>
-          <OrganizationProfile
-            Profile={Profile}
-            ProfileHandler={ProfileHandler}
-          />
-        </React.Suspense>
-      </Modal>
       <TableButtonBar />
       <Table
         scroll={{ y: 700 }}
         pagination={false}
-        rowKey="Id"
+        rowKey="Key"
         size="small"
         dataSource={OrganizationsTable}
         rowSelection={{
@@ -89,18 +66,6 @@ export default function Organizations() {
           renderCell: () => {
             return null;
           },
-        }}
-        onRow={(Record, Index) => {
-          return {
-            onClick: () => {
-              SetNewSelectedKey(Record.Id);
-            },
-            onDoubleClick: () => {
-              RequestProfile().then(() => {
-                SetNewShowModal(true);
-              });
-            },
-          };
         }}
         columns={[
           {
@@ -130,8 +95,58 @@ export default function Organizations() {
             title: 'Наименование',
             dataIndex: 'Caption',
             key: 'Caption',
+            onCell: (Record, Index) => {
+              return {
+                onDoubleClick: () => {
+                  OrganizationHandler(Index, [['CaptionEdit', true]]);
+                },
+              };
+            },
             render: (Value, Record, Index) => {
-              return <RowTablePointerStyle>{Value}</RowTablePointerStyle>;
+              return Record.CaptionEdit ? (
+                <RowInputStyle>
+                  <Input size="small" value={Value} />
+                </RowInputStyle>
+              ) : (
+                <RowTablePointerStyle>{Value}</RowTablePointerStyle>
+              );
+            },
+          },
+          {
+            title: 'Внутренняя',
+            dataIndex: 'Internal',
+            key: 'Internal',
+            render: (Value, Record, Index) => {
+              return (
+                <RowStyle width="250px" justifyContent="space-between">
+                  <RowInputStyle>
+                    <Checkbox
+                      checked={Value}
+                      onChange={(Event) => {
+                        OrganizationHandler(Index, [
+                          ['Internal', Event.target.checked],
+                          ['InternalEdit', true],
+                        ]);
+                      }}
+                    />
+                  </RowInputStyle>
+                  {Record.InternalEdit || Record.CaptionEdit ? (
+                    <RowStyle width="350px" justifyContent="space-between">
+                      <Button size="small" type="primary" onClick={() => {}}>
+                        Сохранить
+                      </Button>
+                      <Button
+                        size="small"
+                        onClick={(Event) => {
+                          Event.stopPropagation();
+                        }}
+                      >
+                        Отмена
+                      </Button>
+                    </RowStyle>
+                  ) : null}
+                </RowStyle>
+              );
             },
           },
         ]}
