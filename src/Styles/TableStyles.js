@@ -5,7 +5,7 @@ export const RowTablePointerStyle = styled.div`
 `;
 
 export const RowInputStyle = styled.div`
-  width: 180px;
+  width: ${(props) => props.width};
 `;
 
 export const RowStyle = styled.div`

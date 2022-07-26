@@ -271,7 +271,7 @@ export default function OrganizationsReference() {
             },
             render: (Value, Record, Index) => {
               return Record.CaptionEdit ? (
-                <RowInputStyle>
+                <RowInputStyle width="180px">
                   <Input size="small" defaultValue={Value} ref={InputRef} />
                 </RowInputStyle>
               ) : (

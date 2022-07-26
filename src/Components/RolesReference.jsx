@@ -4,7 +4,7 @@ import { Input, Modal, Table } from 'antd';
 import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import { SearchOutlined } from '@ant-design/icons';
-const RoleProfile = React.lazy(() => import('../Components/RoleProfile'));
+const RoleProfile = React.lazy(() => import('./RoleProfile'));
 export default function RolesReference(props) {
   const [RolesTable, SetNewRolesTable] = useState([]);
   const [Profile, SetNewProfile] = useState(null);

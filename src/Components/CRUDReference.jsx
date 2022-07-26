@@ -219,7 +219,7 @@ const CRUDReference = inject('GlobalStore')(
               render: (Value, Record, Index) =>
                 Record.Edited ? (
                   <RowStyle width="350px" justifyContent="space-between">
-                    <RowInputStyle>
+                    <RowInputStyle width="180px">
                       <Input size="small" defaultValue={Value} ref={InputRef} />
                     </RowInputStyle>
                     <RowStyle width="160px" justifyContent="space-between">

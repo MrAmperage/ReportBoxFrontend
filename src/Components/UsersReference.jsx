@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
-const UserProfile = React.lazy(() => import('../Components/UserProfile'));
+const UserProfile = React.lazy(() => import('./UserProfile'));
 export default function UsersReference(props) {
   const [SelectedKey, SetNewSelectedKey] = useState(null);
   const [UsersTable, SetNewUsersTable] = useState([]);
