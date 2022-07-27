@@ -49,7 +49,9 @@ export default function GroupProfile(props) {
               onChange={(Event) => {
                 props.ProfileHandler(
                   'ShouldersPrecision',
-                  Event.target.valueAsNumber
+                  Event.target.valueAsNumber >= 0
+                    ? Event.target.valueAsNumber
+                    : 0
                 );
               }}
               size="small"

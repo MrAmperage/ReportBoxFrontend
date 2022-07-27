@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Input, Modal, Table } from 'antd';
+import { Input, message, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
@@ -72,12 +72,20 @@ export default function GroupsReference() {
     );
   };
   const SaveProfile = () => {
-    return ApiFetch(
-      `api/Groups${'Id' in Profile ? `/${Profile.Id}` : ''}`,
-      `${'Id' in Profile ? 'PATCH' : 'POST'}`,
-      Profile,
-      (Response) => {}
-    );
+    if (Profile.Caption.length > 0) {
+      ApiFetch(
+        `api/Groups${'Id' in Profile ? `/${Profile.Id}` : ''}`,
+        `${'Id' in Profile ? 'PATCH' : 'POST'}`,
+        Profile,
+        (Response) => {
+          RequestData().then(() => {
+            SetNewShowModal(false);
+          });
+        }
+      );
+    } else {
+      message.warning('Выберете другое наименование');
+    }
   };
   useEffect(() => {
     RequestData();
@@ -91,11 +99,7 @@ export default function GroupsReference() {
           SetNewShowModal(false);
         }}
         onOk={() => {
-          SaveProfile().then(() => {
-            RequestData().then(() => {
-              SetNewShowModal(false);
-            });
-          });
+          SaveProfile();
         }}
         visible={ShowModal}
         width="450px"
