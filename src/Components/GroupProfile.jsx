@@ -13,13 +13,23 @@ export default function GroupProfile(props) {
       <RowProfileWrapper>
         <ProfileRowElement>Группа:</ProfileRowElement>
         <ProfileRowElement>
-          <Input size="small" width="190px" value={props.Profile.Caption} />
+          <Input
+            size="small"
+            width="190px"
+            value={props.Profile.Caption}
+            onChange={(Event) => {
+              props.ProfileHandler('Caption', Event.target.value);
+            }}
+          />
         </ProfileRowElement>
       </RowProfileWrapper>
       <RowProfileWrapper>
         <ProfileRowElement>Округление плеч:</ProfileRowElement>
         <ProfileRowElement>
           <Select
+            onChange={(Value) => {
+              props.ProfileHandler('ShouldersRound', Value);
+            }}
             dropdownMatchSelectWidth={130}
             value={props.Profile.ShouldersRound}
             options={[
@@ -36,6 +46,12 @@ export default function GroupProfile(props) {
         <ProfileRowElement>
           <RowInputStyle width="50px">
             <Input
+              onChange={(Event) => {
+                props.ProfileHandler(
+                  'ShouldersPrecision',
+                  Event.target.valueAsNumber
+                );
+              }}
               size="small"
               type="number"
               value={props.Profile.ShouldersPrecision}
