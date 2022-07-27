@@ -1,6 +1,7 @@
-import { Modal, Table } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { Input, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { ApiFetch } from '../Helpers/Helpers';
+import { ApiFetch, TableSorter } from '../Helpers/Helpers';
 import { RowTablePointerStyle } from '../Styles/TableStyles';
 import TableButtonBar from './TableButtonBar';
 const GroupProfile = React.lazy(() => import('./GroupProfile'));
@@ -9,11 +10,23 @@ export default function GroupsReference() {
   const [SelectedKey, SetNewSelectedKey] = useState(null);
   const [Profile, SetNewProfile] = useState(null);
   const [ShowModal, SetNewShowModal] = useState(false);
+  const [SearchString, SetNewSearchString] = useState(null);
   const SearchRef = React.createRef();
   const RequestProfile = (Id) => {
     return ApiFetch(`api/Groups/${Id}`, 'GET', undefined, (Response) => {
       SetNewProfile(Response.Data);
     });
+  };
+  const EventListener = () => {
+    document.addEventListener('keydown', ClearSearch, false);
+    return () => {
+      document.removeEventListener('keydown', ClearSearch, false);
+    };
+  };
+  const ClearSearch = (Event) => {
+    if (Event.key == 'Escape') {
+      SetNewSearchString(null);
+    }
   };
   const AddGroup = () => {
     SetNewProfile({
@@ -68,6 +81,7 @@ export default function GroupsReference() {
   };
   useEffect(() => {
     RequestData();
+    EventListener();
   }, []);
   return (
     <>
@@ -134,6 +148,31 @@ export default function GroupsReference() {
         size="small"
         columns={[
           {
+            sorter: TableSorter('Caption'),
+            onFilter: (Value, Record) => {
+              if (SearchString != null) {
+                return Record[Value].toString()
+                  .toLowerCase()
+                  .includes(SearchString);
+              } else {
+                return true;
+              }
+            },
+            filteredValue: ['Caption'],
+            filterIcon: <SearchOutlined />,
+            filterDropdown: () => (
+              <Input
+                placeholder="Поиск"
+                size="small"
+                ref={SearchRef}
+                onPressEnter={(Event) => {
+                  SetNewSearchString(
+                    SearchRef.current.input.value.toLowerCase()
+                  );
+                }}
+              />
+            ),
+            sortOrder: 'ascend',
             title: 'Наименование',
             dataIndex: 'Caption',
             key: 'Caption',

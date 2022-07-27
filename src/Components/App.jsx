@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import React from 'react';
 import { useEffect } from 'react';
 import GlobalStore from '../GlobalStore/GlobalStore';
-import { Layout, Tabs, ConfigProvider, Spin, Button } from 'antd';
+import { Layout, Tabs, ConfigProvider, Button } from 'antd';
 import ru_RU from 'antd/lib/locale/ru_RU';
 import { observer, Provider } from 'mobx-react';
 const { Header, Sider, Content } = Layout;
