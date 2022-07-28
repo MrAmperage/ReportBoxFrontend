@@ -79,9 +79,12 @@ export default function UsersReference(props) {
       RequestData();
     });
   };
-  const ProfileHandler = (Feeld, Value) => {
+  const ProfileHandler = (FieldsArray) => {
     let NewProfile = { ...Profile };
-    NewProfile[Feeld] = Value;
+    FieldsArray.forEach((Fields) => {
+      NewProfile[Fields[0]] = Fields[1];
+    });
+
     SetNewProfile(NewProfile);
   };
   const ClearSearch = (Event) => {

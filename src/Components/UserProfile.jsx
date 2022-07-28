@@ -1,4 +1,12 @@
-import { Button, Checkbox, DatePicker, Input, message, Select } from 'antd';
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Input,
+  message,
+  Select,
+  Switch,
+} from 'antd';
 import Bcrypt from 'bcryptjs';
 import React, { useState } from 'react';
 
@@ -8,7 +16,7 @@ import {
   ProfileWrapper,
   RowProfileWrapper,
 } from '../Styles/ProfileStyles';
-import { RowStyle } from '../Styles/TableStyles';
+import { RowInputStyle, RowStyle } from '../Styles/TableStyles';
 import Moment from 'moment';
 export default function UserProfile(props) {
   const [ShowPasswordInput, SetNewShowPasswordInput] = useState(false);
@@ -26,7 +34,7 @@ export default function UserProfile(props) {
         <ProfileRowElement>
           <Input
             onChange={(Event) => {
-              props.ProfileHandler('Username', Event.target.value);
+              props.ProfileHandler([['Username', Event.target.value]]);
             }}
             size="small"
             width="190px"
@@ -44,7 +52,9 @@ export default function UserProfile(props) {
                 size="small"
                 value={props.Profile.NotHashedPassword}
                 onChange={(Event) => {
-                  props.ProfileHandler('NotHashedPassword', Event.target.value);
+                  props.ProfileHandler([
+                    ['NotHashedPassword', Event.target.value],
+                  ]);
                 }}
               />
               <RowStyle width="140px" justifyContent="space-evenly">
@@ -52,7 +62,7 @@ export default function UserProfile(props) {
                   onClick={() => {
                     SavePassword(props.Profile.NotHashedPassword)
                       .then((Password) => {
-                        props.ProfileHandler('Password', Password);
+                        props.ProfileHandler([['Password', Password]]);
                         SetNewShowPasswordInput(false);
                       })
                       .catch((Error) => {
@@ -94,7 +104,7 @@ export default function UserProfile(props) {
           <Select
             dropdownMatchSelectWidth={130}
             onChange={(Value) => {
-              props.ProfileHandler('RoleId', Value);
+              props.ProfileHandler([['RoleId', Value]]);
             }}
             size="small"
             options={props.Roles}
@@ -108,7 +118,7 @@ export default function UserProfile(props) {
           <Checkbox
             checked={props.Profile.Enabled}
             onChange={(Event) => {
-              props.ProfileHandler('Enabled', Event.target.checked);
+              props.ProfileHandler([['Enabled', Event.target.checked]]);
             }}
           />
         </ProfileRowElement>
@@ -118,7 +128,7 @@ export default function UserProfile(props) {
         <ProfileRowElement>
           <DatePicker
             onOk={(MomentObject) => {
-              props.ProfileHandler('StartDate', MomentObject.format());
+              props.ProfileHandler([['StartDate', MomentObject.format()]]);
             }}
             format="DD.MM.YYY HH:mm:ss"
             size="small"
@@ -132,7 +142,7 @@ export default function UserProfile(props) {
         <ProfileRowElement>
           <DatePicker
             onOk={(MomentObject) => {
-              props.ProfileHandler('EndDate', MomentObject.format());
+              props.ProfileHandler([['EndDate', MomentObject.format()]]);
             }}
             format="DD.MM.YYY HH:mm:ss"
             size="small"
@@ -141,6 +151,66 @@ export default function UserProfile(props) {
           />
         </ProfileRowElement>
       </RowProfileWrapper>
+      <RowProfileWrapper>
+        <ProfileRowElement>Переопределить параметры группы:</ProfileRowElement>
+        <ProfileRowElement>
+          <Switch
+            checked={props.Profile.RedefineGroupParameters}
+            size="small"
+            onChange={(Checked) => {
+              props.ProfileHandler([
+                ['RedefineGroupParameters', Checked],
+                ['ShouldersRound', 'Math'],
+                ['ShouldersPrecision', 1],
+              ]);
+            }}
+          />
+        </ProfileRowElement>
+      </RowProfileWrapper>
+      {props.Profile.RedefineGroupParameters ? (
+        <>
+          <RowProfileWrapper>
+            <ProfileRowElement>Округление плеч:</ProfileRowElement>
+            <ProfileRowElement>
+              <Select
+                onChange={(Value) => {
+                  props.ProfileHandler([['ShouldersRound', Value]]);
+                }}
+                value={props.Profile.ShouldersRound}
+                size="small"
+                dropdownMatchSelectWidth={130}
+                options={[
+                  { label: 'Вверх', value: 'Up' },
+                  { label: 'Вниз', value: 'Down' },
+                  { label: 'Математически', value: 'Math' },
+                ]}
+              />
+            </ProfileRowElement>
+          </RowProfileWrapper>
+          <RowProfileWrapper>
+            <ProfileRowElement>Прицессия плеч:</ProfileRowElement>
+            <ProfileRowElement>
+              <RowInputStyle width="50px">
+                <Input
+                  onChange={(Event) => {
+                    props.ProfileHandler([
+                      [
+                        'ShouldersPrecision',
+                        Event.target.valueAsNumber >= 0
+                          ? Event.target.valueAsNumber
+                          : 0,
+                      ],
+                    ]);
+                  }}
+                  size="small"
+                  type="number"
+                  value={props.Profile.ShouldersPrecision}
+                />
+              </RowInputStyle>
+            </ProfileRowElement>
+          </RowProfileWrapper>
+        </>
+      ) : null}
     </ProfileWrapper>
   );
 }
