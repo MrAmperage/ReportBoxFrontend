@@ -152,7 +152,7 @@ export default function UserProfile(props) {
         </ProfileRowElement>
       </RowProfileWrapper>
       <RowProfileWrapper>
-        <ProfileRowElement>Переопределить параметры группы:</ProfileRowElement>
+        <ProfileRowElement>Переопределить параметры групп:</ProfileRowElement>
         <ProfileRowElement>
           <Switch
             checked={props.Profile.RedefineGroupParameters}
