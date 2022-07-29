@@ -9,6 +9,7 @@ const UserProfile = React.lazy(() => import('./UserProfile'));
 export default function UsersReference(props) {
   const [SelectedKey, SetNewSelectedKey] = useState(null);
   const [UsersTable, SetNewUsersTable] = useState([]);
+  const [Groups, SetNewGroups] = useState([]);
   const [ShowModal, SetNewShowModal] = useState(false);
   const [Profile, SetNewProfile] = useState(null);
   const [Roles, SetNewRoles] = useState([]);
@@ -116,6 +117,12 @@ export default function UsersReference(props) {
         );
       })
     );
+    PromiseArray.push(
+      ApiFetch('api/Groups', 'GET', undefined, (Response) => {
+        SetNewGroups(Response.Data);
+      })
+    );
+
     return Promise.all(PromiseArray);
   };
   useEffect(() => {
@@ -147,6 +154,7 @@ export default function UsersReference(props) {
             Profile={Profile}
             Roles={Roles}
             ProfileHandler={ProfileHandler}
+            Groups={Groups}
           />
         </React.Suspense>
       </Modal>

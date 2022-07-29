@@ -1,11 +1,13 @@
 import {
   Button,
   Checkbox,
+  Collapse,
   DatePicker,
   Input,
   message,
   Select,
   Switch,
+  Tree,
 } from 'antd';
 import Bcrypt from 'bcryptjs';
 import React, { useState } from 'react';
@@ -18,6 +20,7 @@ import {
 } from '../Styles/ProfileStyles';
 import { RowInputStyle, RowStyle } from '../Styles/TableStyles';
 import Moment from 'moment';
+const { Panel } = Collapse;
 export default function UserProfile(props) {
   const [ShowPasswordInput, SetNewShowPasswordInput] = useState(false);
   const SavePassword = (Password) => {
@@ -211,6 +214,20 @@ export default function UserProfile(props) {
           </RowProfileWrapper>
         </>
       ) : null}
+      <Collapse>
+        <Panel header="Группы">
+          <Tree
+            checkedKeys={props.Profile.GroupsAccess}
+            treeData={props.Groups}
+            onCheck={(Checked) => {
+              props.ProfileHandler([['GroupsAccess', Checked]]);
+            }}
+            checkable={true}
+            selectable={false}
+            fieldNames={{ title: 'Caption', key: 'Id' }}
+          />
+        </Panel>
+      </Collapse>
     </ProfileWrapper>
   );
 }

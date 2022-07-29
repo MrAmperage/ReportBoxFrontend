@@ -39,20 +39,6 @@ export default function RoleProfile(props) {
           />
         </Panel>
       </Collapse>
-      <Collapse>
-        <Panel header="Группы">
-          <Tree
-            checkable={true}
-            selectable={false}
-            fieldNames={{ title: 'Caption', key: 'Id' }}
-            treeData={props.Groups}
-            onCheck={(Checked) => {
-              props.ProfileHandler('OrganizationsAccess', Checked);
-            }}
-            checkedKeys={props.Profile.OrganizationsAccess}
-          />
-        </Panel>
-      </Collapse>
     </>
   );
 }

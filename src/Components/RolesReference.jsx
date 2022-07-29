@@ -12,7 +12,6 @@ export default function RolesReference(props) {
   const [SearchString, SetNewSearchString] = useState(null);
   const [ShowModal, SetNewShowModal] = useState(false);
   const [UserMenu, SetNewUserMenu] = useState([]);
-  const [Groups, SetNewGroups] = useState([]);
   const SearchRef = React.createRef();
   const EventListener = () => {
     document.addEventListener('keydown', ClearSearch, false);
@@ -79,11 +78,6 @@ export default function RolesReference(props) {
         }
       )
     );
-    PromiseArray.push(
-      ApiFetch('api/Groups', 'GET', undefined, (Response) => {
-        SetNewGroups(Response.Data);
-      })
-    );
     return Promise.all(PromiseArray);
   };
   const ClearSearch = (Event) => {
@@ -144,7 +138,6 @@ export default function RolesReference(props) {
           <RoleProfile
             Profile={Profile}
             UserMenu={UserMenu}
-            Groups={Groups}
             ProfileHandler={ProfileHandler}
           />
         </React.Suspense>
